@@ -150,10 +150,11 @@ class TestMongoDBAtlasCampusSystem(unittest.TestCase):
 
         # 1x1 transparent PNG as base64 data URL
         base64_img = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+        test_title = f"Broken switchboard camera test {uuid.uuid4().hex[:6]}"
 
         resp = self.client.post("/student", data={
             "location": "Hostel 2, Room 101",
-            "title": "Broken switchboard live camera evidence",
+            "title": test_title,
             "description": "Electric socket sparks when plugged in, danger of electric shock.",
             "camera_photo": base64_img
         }, follow_redirects=True)
@@ -162,7 +163,7 @@ class TestMongoDBAtlasCampusSystem(unittest.TestCase):
         self.assertIn(b"Complaint Registered!", resp.data)
 
         # Verify saved in MongoDB Atlas
-        c_doc = db.complaints.find_one({"title": "Broken switchboard live camera evidence"})
+        c_doc = db.complaints.find_one({"title": test_title})
         self.assertIsNotNone(c_doc)
         self.assertTrue(c_doc.get("photo"))
         
@@ -181,10 +182,11 @@ class TestMongoDBAtlasCampusSystem(unittest.TestCase):
         self.client.get("/demo-login/faculty")
 
         base64_img = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+        faculty_title = f"Projector HDMI port damaged camera snapshot {uuid.uuid4().hex[:6]}"
 
         resp = self.client.post("/faculty", data={
             "location": "Seminar Hall A",
-            "title": "Projector HDMI port damaged camera snapshot",
+            "title": faculty_title,
             "description": "HDMI port pins bent, cannot connect laptop during seminar.",
             "urgency_override": "High",
             "camera_photo": base64_img
@@ -194,7 +196,7 @@ class TestMongoDBAtlasCampusSystem(unittest.TestCase):
         self.assertIn(b"Complaint Registered!", resp.data)
 
         # Verify saved in MongoDB Atlas
-        c_doc = db.complaints.find_one({"title": "Projector HDMI port damaged camera snapshot"})
+        c_doc = db.complaints.find_one({"title": faculty_title})
         self.assertIsNotNone(c_doc)
         self.assertTrue(c_doc.get("photo"))
 

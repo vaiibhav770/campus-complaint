@@ -40,14 +40,20 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html {
+      background-color: #f8fafc;
+      min-height: 100vh;
+    }
+
     body {
       font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-      background-color: var(--bg);
+      background-color: transparent !important;
       color: var(--text-main);
       line-height: 1.5;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      position: relative;
     }
 
     /* Navbar */
@@ -506,10 +512,217 @@
         justify-content: space-between;
       }
     }
+
+    header.navbar, main.main-content, footer.site-footer {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* 3D Canvas Background */
+    .campus-3d-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.95;
+    }
+
+    /* Ambient Glowing Orbs */
+    .ambient-glow {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+      z-index: -1;
+      opacity: 0.35;
+      animation: floatAmbient 20s ease-in-out infinite alternate;
+    }
+    .orb-1 {
+      width: 520px;
+      height: 520px;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.38), rgba(99, 102, 241, 0.08));
+      top: -120px;
+      right: -100px;
+    }
+    .orb-2 {
+      width: 550px;
+      height: 550px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.28), rgba(6, 182, 212, 0.08));
+      bottom: -150px;
+      left: -120px;
+      animation-duration: 25s;
+      animation-delay: -6s;
+    }
+
+    @keyframes floatAmbient {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(45px, 35px) scale(1.08); }
+      100% { transform: translate(-35px, 55px) scale(0.94); }
+    }
+
+    /* Staggered & Entrance Animations */
+    .animate-fadeInUp {
+      animation: fadeInUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Glassmorphism & Modern Elevation */
+    header.navbar {
+      background: rgba(255, 255, 255, 0.86) !important;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+      transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.28s ease, border-color 0.25s ease;
+    }
+
+    /* 3D Tilt Card Base */
+    .tilt-3d {
+      transform-style: preserve-3d;
+      perspective: 1000px;
+      will-change: transform;
+      transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.2s ease;
+    }
+    .tilt-3d:hover {
+      box-shadow: 0 20px 35px -8px rgba(37, 99, 235, 0.14), 0 10px 15px -3px rgba(15, 23, 42, 0.06);
+    }
+
+    /* Buttons with Tactile Micro-Interactions */
+    .btn {
+      transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px -2px rgba(37, 99, 235, 0.3);
+    }
+    .btn:active {
+      transform: translateY(0) scale(0.98);
+    }
+    .btn-secondary:hover {
+      box-shadow: 0 4px 12px rgba(100, 116, 139, 0.18);
+    }
+
+    /* Camera HUD Overlay (Reticle, Brackets & Scanline) */
+    .hud-bracket {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-color: #38bdf8;
+      border-style: solid;
+      pointer-events: none;
+      z-index: 6;
+      filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.6));
+    }
+    .hud-bracket.top-left { top: 12px; left: 12px; border-width: 2.5px 0 0 2.5px; border-radius: 4px 0 0 0; }
+    .hud-bracket.top-right { top: 12px; right: 12px; border-width: 2.5px 2.5px 0 0; border-radius: 0 4px 0 0; }
+    .hud-bracket.bottom-left { bottom: 12px; left: 12px; border-width: 0 0 2.5px 2.5px; border-radius: 0 0 0 4px; }
+    .hud-bracket.bottom-right { bottom: 12px; right: 12px; border-width: 0 2.5px 2.5px 0; border-radius: 0 0 4px 0; }
+
+    .hud-scanline {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent 5%, rgba(56, 189, 248, 0.85) 50%, transparent 95%);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+      pointer-events: none;
+      z-index: 5;
+      animation: hudScan 2.4s ease-in-out infinite alternate;
+    }
+    @keyframes hudScan {
+      0% { top: 12%; opacity: 0.35; }
+      50% { opacity: 0.95; }
+      100% { top: 88%; opacity: 0.35; }
+    }
+
+    .hud-crosshair {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 24px;
+      height: 24px;
+      pointer-events: none;
+      z-index: 6;
+      opacity: 0.45;
+    }
+    .hud-crosshair::before, .hud-crosshair::after {
+      content: "";
+      position: absolute;
+      background: #38bdf8;
+    }
+    .hud-crosshair::before { top: 0; bottom: 0; left: 11px; width: 2px; }
+    .hud-crosshair::after { left: 0; right: 0; top: 11px; height: 2px; }
+
+    /* 3D Floating Animations */
+    @keyframes float3d {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-7px) rotate(1.5deg); }
+    }
+    .float-ai-badge {
+      animation: float3d 3.6s ease-in-out infinite;
+      display: inline-block;
+      filter: drop-shadow(0 6px 12px rgba(37, 99, 235, 0.28));
+    }
+
+    /* Electrical Flow Pulse for Stepper */
+    @keyframes electricFlow {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
+    }
+    .stepper-progress {
+      background: linear-gradient(90deg, #2563eb, #06b6d4, #10b981, #3b82f6) !important;
+      background-size: 200% 100% !important;
+      animation: electricFlow 3s linear infinite;
+      box-shadow: 0 0 10px rgba(37, 99, 235, 0.45);
+    }
+    .step-node.active .step-circle {
+      border-color: var(--primary) !important;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2) !important;
+      animation: pulseGlow 2s infinite alternate;
+    }
+    @keyframes pulseGlow {
+      from { box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+      to { box-shadow: 0 0 0 8px rgba(37, 99, 235, 0.35); }
+    }
+
+    /* Quick Preset Buttons 3D Elevation */
+    .quick-presets .preset-btn {
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .quick-presets .preset-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.15);
+      border-color: var(--primary);
+    }
   </style>
   {% block extra_css %}{% endblock %}
 </head>
 <body>
+  <!-- Interactive 3D Campus Mesh Canvas & Ambient Glows -->
+  <canvas id="campus3dCanvas" class="campus-3d-bg"></canvas>
+  <div class="ambient-glow orb-1"></div>
+  <div class="ambient-glow orb-2"></div>
 
   <!-- Navigation -->
   <header class="navbar">
@@ -594,6 +807,165 @@
     <p>🏫 <strong>Smart Campus Complaint & Resolution Management System</strong> &bull; Student &bull; Faculty &bull; Admin &bull; Built with Flask &amp; AI</p>
   </footer>
 
+  <!-- 3D Interactive Campus Mesh & Micro-Interactions Script -->
+  <script>
+    // --- 3D Smart Campus Interactive Mesh Constellation ---
+    (function initCampus3D() {
+      const canvas = document.getElementById("campus3dCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      let width = (canvas.width = window.innerWidth);
+      let height = (canvas.height = window.innerHeight);
+
+      window.addEventListener("resize", () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      });
+
+      const NODE_COUNT = 38;
+      const nodes = [];
+      const FOV = 420;
+      let rotX = 0, rotY = 0;
+      let targetRotX = 0, targetRotY = 0;
+
+      for (let i = 0; i < NODE_COUNT; i++) {
+        nodes.push({
+          x: (Math.random() - 0.5) * 1100,
+          y: (Math.random() - 0.5) * 800,
+          z: (Math.random() - 0.5) * 800,
+          vx: (Math.random() - 0.5) * 0.35,
+          vy: (Math.random() - 0.5) * 0.35,
+          vz: (Math.random() - 0.5) * 0.35,
+          radius: 2 + Math.random() * 2.2,
+          color: i % 4 === 0 ? "#2563eb" : i % 4 === 1 ? "#10b981" : i % 4 === 2 ? "#6366f1" : "#0284c7"
+        });
+      }
+
+      window.addEventListener("mousemove", (e) => {
+        const nx = (e.clientX / width - 0.5) * 2;
+        const ny = (e.clientY / height - 0.5) * 2;
+        targetRotY = nx * 0.22;
+        targetRotX = -ny * 0.16;
+      });
+
+      let isVisible = true;
+      document.addEventListener("visibilitychange", () => {
+        isVisible = !document.hidden;
+        if (isVisible) requestAnimationFrame(render);
+      });
+
+      function render() {
+        if (!isVisible) return;
+        ctx.clearRect(0, 0, width, height);
+
+        rotX += (targetRotX - rotX) * 0.045 + 0.0002;
+        rotY += (targetRotY - rotY) * 0.045 + 0.0006;
+
+        const cosX = Math.cos(rotX), sinX = Math.sin(rotX);
+        const cosY = Math.cos(rotY), sinY = Math.sin(rotY);
+
+        const projected = [];
+
+        for (let i = 0; i < nodes.length; i++) {
+          const n = nodes[i];
+          n.x += n.vx;
+          n.y += n.vy;
+          n.z += n.vz;
+
+          if (n.x < -600 || n.x > 600) n.vx *= -1;
+          if (n.y < -450 || n.y > 450) n.vy *= -1;
+          if (n.z < -450 || n.z > 450) n.vz *= -1;
+
+          const x1 = n.x * cosY - n.z * sinY;
+          const z1 = n.z * cosY + n.x * sinY;
+          const y2 = n.y * cosX - z1 * sinX;
+          const z2 = z1 * cosX + n.y * sinX;
+
+          const depth = z2 + 700;
+          if (depth > 60) {
+            const scale = FOV / depth;
+            const px = width / 2 + x1 * scale;
+            const py = height / 2 + y2 * scale;
+            const alpha = Math.max(0.12, Math.min(0.85, (z2 + 450) / 900));
+            projected.push({ px, py, scale, alpha, radius: n.radius * scale, color: n.color });
+          }
+        }
+
+        // Draw connections
+        ctx.lineWidth = 0.85;
+        for (let i = 0; i < projected.length; i++) {
+          for (let j = i + 1; j < projected.length; j++) {
+            const p1 = projected[i];
+            const p2 = projected[j];
+            const dx = p1.px - p2.px;
+            const dy = p1.py - p2.py;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 135) {
+              const lineAlpha = (1 - dist / 135) * Math.min(p1.alpha, p2.alpha) * 0.32;
+              ctx.strokeStyle = `rgba(37, 99, 235, ${lineAlpha})`;
+              ctx.beginPath();
+              ctx.moveTo(p1.px, p1.py);
+              ctx.lineTo(p2.px, p2.py);
+              ctx.stroke();
+            }
+          }
+        }
+
+        // Draw glowing 3D nodes
+        for (let i = 0; i < projected.length; i++) {
+          const p = projected[i];
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = p.alpha;
+          ctx.beginPath();
+          ctx.arc(p.px, p.py, Math.max(1, p.radius), 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = "rgba(37, 99, 235, 0.16)";
+          ctx.beginPath();
+          ctx.arc(p.px, p.py, Math.max(2, p.radius * 2.2), 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1.0;
+
+        requestAnimationFrame(render);
+      }
+
+      requestAnimationFrame(render);
+    })();
+
+    // --- 3D Card Interactive Tilt Micro-Engine ---
+    function initTilt3D() {
+      const tiltElements = document.querySelectorAll(".card, .stat-card, .chart-card, .hotline-card, .auth-card, .register-card, .receipt-card, .tilt-3d, .ai-card");
+      tiltElements.forEach(el => {
+        el.style.transition = "transform 0.15s ease-out, box-shadow 0.2s ease";
+        el.addEventListener("mousemove", (e) => {
+          const rect = el.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          const xPct = (x / rect.width - 0.5) * 2;
+          const yPct = (y / rect.height - 0.5) * 2;
+          const rotY = xPct * 5.5;
+          const rotX = -yPct * 5.5;
+          el.style.transform = `perspective(850px) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg) translateY(-3px)`;
+        });
+        el.addEventListener("mouseleave", () => {
+          el.style.transform = "perspective(850px) rotateX(0deg) rotateY(0deg) translateY(0)";
+        });
+      });
+    }
+
+    // --- Stagger Entrance on Page Load ---
+    window.addEventListener("DOMContentLoaded", () => {
+      initTilt3D();
+      const cards = document.querySelectorAll(".card, .stat-card, .auth-card, .register-card, .receipt-card, .hotline-card");
+      cards.forEach((c, idx) => {
+        c.classList.add("animate-fadeInUp");
+        c.style.animationDelay = `${idx * 0.06}s`;
+      });
+    });
+  </script>
   {% block extra_js %}{% endblock %}
 </body>
 </html>

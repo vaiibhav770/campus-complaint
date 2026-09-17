@@ -5,12 +5,13 @@
 <style>
   .receipt-card {
     max-width: 680px;
-    margin: 0 auto;
-    background: #ffffff;
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 36px;
-    box-shadow: var(--shadow-md);
+    margin: 30px auto 50px;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: 20px;
+    padding: 38px 36px;
+    box-shadow: 0 16px 40px -10px rgba(16, 185, 129, 0.12), 0 4px 16px rgba(15, 23, 42, 0.04);
   }
   .receipt-header {
     text-align: center;
@@ -88,9 +89,9 @@
 {% endblock %}
 
 {% block content %}
-<div class="receipt-card">
+<div class="receipt-card tilt-3d">
   <div class="receipt-header">
-    <div class="success-icon">
+    <div class="success-icon float-ai-badge">
       <i class="fa-solid fa-check"></i>
     </div>
     <h1 style="font-size: 1.6rem; font-weight: 800;">Complaint Registered!</h1>

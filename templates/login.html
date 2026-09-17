@@ -4,32 +4,34 @@
 {% block extra_css %}
 <style>
   .auth-container {
-    max-width: 480px;
-    margin: 30px auto 50px;
+    max-width: 460px;
+    margin: 40px auto 60px;
   }
   .auth-card {
-    background: #ffffff;
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 36px 32px;
-    box-shadow: var(--shadow-md);
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: 20px;
+    padding: 38px 34px;
+    box-shadow: 0 20px 45px -12px rgba(37, 99, 235, 0.14), 0 4px 16px rgba(15, 23, 42, 0.04);
   }
   .auth-header {
-    margin-bottom: 26px;
+    margin-bottom: 28px;
     text-align: center;
   }
   .auth-icon {
-    width: 52px;
-    height: 52px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    width: 58px;
+    height: 58px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #2563eb, #4f46e5);
     color: white;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.4rem;
-    margin-bottom: 12px;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    font-size: 1.5rem;
+    margin-bottom: 14px;
+    box-shadow: 0 10px 24px rgba(37, 99, 235, 0.35);
   }
   .auth-title {
     font-size: 1.45rem;
@@ -77,9 +79,9 @@
 
 {% block content %}
 <div class="auth-container">
-  <div class="auth-card">
+  <div class="auth-card tilt-3d">
     <div class="auth-header">
-      <div class="auth-icon">
+      <div class="auth-icon float-ai-badge">
         <i class="fa-solid fa-lock"></i>
       </div>
       <h1 class="auth-title">Sign In to Campus Portal</h1>

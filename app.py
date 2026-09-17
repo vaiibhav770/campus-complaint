@@ -38,6 +38,12 @@ app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=30)  # Persistent logi
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+# Auto-initialize MongoDB Atlas collections and indexes on startup (for Gunicorn / Render)
+try:
+    db_module.init_db()
+except Exception as _e:
+    print(f"MongoDB Atlas startup init note: {_e}")
+
 
 def allowed_file(filename: str) -> bool:
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXT

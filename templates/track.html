@@ -6,11 +6,12 @@
   .track-search-card {
     max-width: 800px;
     margin: 0 auto 28px;
-    background: #ffffff;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 24px 32px;
-    box-shadow: var(--shadow-sm);
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: 18px;
+    padding: 26px 34px;
+    box-shadow: 0 12px 30px -8px rgba(37, 99, 235, 0.1);
   }
   .search-form-row {
     display: flex;
@@ -124,11 +125,12 @@
   .ticket-card {
     max-width: 800px;
     margin: 0 auto;
-    background: #ffffff;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 32px;
-    box-shadow: var(--shadow-sm);
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: 20px;
+    padding: 34px;
+    box-shadow: 0 16px 40px -10px rgba(37, 99, 235, 0.12);
   }
   .ticket-details-grid {
     display: grid;
@@ -192,7 +194,7 @@
 
 {% block content %}
 <!-- Search Form Card -->
-<div class="track-search-card">
+<div class="track-search-card tilt-3d">
   <h1 style="font-size: 1.4rem; font-weight: 800; display:flex; align-items:center; gap:10px;">
     <i class="fa-solid fa-magnifying-glass-location" style="color:var(--primary);"></i>
     Track Campus Complaint
@@ -236,7 +238,7 @@
       {% set status_step = 5 %}
     {% endif %}
 
-    <div class="ticket-card">
+    <div class="ticket-card tilt-3d">
       <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; border-bottom:1px solid var(--border); padding-bottom:18px;">
         <div>
           <span class="ticket-chip" style="font-size:1.1rem; padding:4px 10px;">{{ complaint['id'] }}</span>

@@ -11,14 +11,20 @@
     margin-bottom: 24px;
   }
   .stat-card {
-    background: #ffffff;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 18px 20px;
-    box-shadow: var(--shadow-sm);
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 4px 18px -2px rgba(15, 23, 42, 0.05);
     display: flex;
     align-items: center;
     justify-content: space-between;
+    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease, border-color 0.22s ease;
+  }
+  .stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px -6px rgba(37, 99, 235, 0.16);
   }
   .stat-val {
     font-size: 1.8rem;
@@ -206,7 +212,7 @@
 
 <!-- KPI Stats Grid -->
 <div class="stats-grid">
-  <div class="stat-card">
+  <div class="stat-card tilt-3d">
     <div>
       <div class="stat-val">{{ stats.total }}</div>
       <div class="stat-title">Total Registered</div>
@@ -216,7 +222,7 @@
     </div>
   </div>
 
-  <div class="stat-card">
+  <div class="stat-card tilt-3d">
     <div>
       <div class="stat-val" style="color:#0284c7;">{{ stats.submitted }}</div>
       <div class="stat-title">New / Triaged</div>
@@ -226,7 +232,7 @@
     </div>
   </div>
 
-  <div class="stat-card">
+  <div class="stat-card tilt-3d">
     <div>
       <div class="stat-val" style="color:#d97706;">{{ stats.in_progress }}</div>
       <div class="stat-title">In Progress</div>
@@ -236,7 +242,7 @@
     </div>
   </div>
 
-  <div class="stat-card">
+  <div class="stat-card tilt-3d">
     <div>
       <div class="stat-val" style="color:#16a34a;">{{ stats.resolved }}</div>
       <div class="stat-title">Resolved / Closed</div>
@@ -246,7 +252,7 @@
     </div>
   </div>
 
-  <div class="stat-card" style="{% if stats.critical > 0 %}border-color:#fca5a5; background:#fff5f5;{% endif %}">
+  <div class="stat-card tilt-3d" style="{% if stats.critical > 0 %}border-color:#fca5a5; background:#fff5f5;{% endif %}">
     <div>
       <div class="stat-val" style="color:#dc2626;">{{ stats.critical }}</div>
       <div class="stat-title">Critical Safety</div>
@@ -259,7 +265,7 @@
 
 <!-- Visual Analytics Charts -->
 <div class="charts-grid">
-  <div class="chart-card">
+  <div class="chart-card tilt-3d">
     <div class="chart-title">
       <i class="fa-solid fa-chart-column" style="color:var(--primary);"></i>
       Complaints Breakdown by Campus Category
@@ -269,7 +275,7 @@
     </div>
   </div>
 
-  <div class="chart-card">
+  <div class="chart-card tilt-3d">
     <div class="chart-title">
       <i class="fa-solid fa-chart-pie" style="color:var(--primary);"></i>
       Severity / Priority Distribution

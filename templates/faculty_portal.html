@@ -4,17 +4,18 @@
 {% block extra_css %}
 <style>
   .faculty-banner {
-    background: linear-gradient(135deg, #78350f, #d97706);
+    background: linear-gradient(135deg, #78350f 0%, #b45309 50%, #d97706 100%);
     color: white;
-    border-radius: var(--radius);
-    padding: 24px 32px;
+    border-radius: 16px;
+    padding: 26px 32px;
     margin-bottom: 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
     gap: 16px;
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 12px 32px -6px rgba(180, 83, 9, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.15);
   }
   .faculty-info {
     display: flex;
@@ -80,11 +81,17 @@
   .hotline-card {
     background: #ffffff;
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 16px;
     display: flex;
     align-items: center;
     gap: 12px;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .hotline-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px -4px rgba(180, 83, 9, 0.16);
+    border-color: #fde68a;
   }
   .hotline-icon {
     width: 40px; height: 40px; border-radius: 8px; background: #fffbeb; color: #b45309; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
@@ -320,6 +327,12 @@
             <div class="camera-container">
               <div class="camera-feed-wrapper">
                 <video id="cameraVideo" autoplay playsinline muted></video>
+                <div class="hud-bracket top-left"></div>
+                <div class="hud-bracket top-right"></div>
+                <div class="hud-bracket bottom-left"></div>
+                <div class="hud-bracket bottom-right"></div>
+                <div class="hud-scanline"></div>
+                <div class="hud-crosshair"></div>
                 <div class="camera-live-badge"><i class="fa-solid fa-circle fa-beat" style="color:#ef4444;"></i> Live Viewfinder</div>
               </div>
               <div class="camera-controls">
@@ -358,9 +371,9 @@
     </div>
 
     <!-- Live AI Preview Panel -->
-    <aside class="ai-card">
+    <aside class="ai-card tilt-3d">
       <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid #fed7aa;">
-        <div style="background:linear-gradient(135deg, #d97706, #b45309); color:white; width:34px; height:34px; border-radius:8px; display:flex; align-items:center; justify-content:center;">
+        <div class="float-ai-badge" style="background:linear-gradient(135deg, #d97706, #b45309); color:white; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; box-shadow:0 4px 12px rgba(217,119,6,0.35);">
           <i class="fa-solid fa-brain"></i>
         </div>
         <div>

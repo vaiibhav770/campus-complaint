@@ -4,17 +4,18 @@
 {% block extra_css %}
 <style>
   .profile-banner {
-    background: linear-gradient(135deg, #1e3a8a, #2563eb);
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #4f46e5 100%);
     color: white;
-    border-radius: var(--radius);
-    padding: 24px 32px;
+    border-radius: 16px;
+    padding: 26px 32px;
     margin-bottom: 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
     gap: 16px;
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 12px 32px -6px rgba(37, 99, 235, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.15);
   }
   .profile-info {
     display: flex;
@@ -280,6 +281,12 @@
             <div class="camera-container">
               <div class="camera-feed-wrapper">
                 <video id="cameraVideo" autoplay playsinline muted></video>
+                <div class="hud-bracket top-left"></div>
+                <div class="hud-bracket top-right"></div>
+                <div class="hud-bracket bottom-left"></div>
+                <div class="hud-bracket bottom-right"></div>
+                <div class="hud-scanline"></div>
+                <div class="hud-crosshair"></div>
                 <div class="camera-live-badge"><i class="fa-solid fa-circle fa-beat" style="color:#ef4444;"></i> Live Viewfinder</div>
               </div>
               <div class="camera-controls">
@@ -318,9 +325,9 @@
     </div>
 
     <!-- Live AI Preview Panel -->
-    <aside class="ai-card">
+    <aside class="ai-card tilt-3d">
       <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--border);">
-        <div style="background:linear-gradient(135deg, #3b82f6, #6366f1); color:white; width:34px; height:34px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1rem;">
+        <div class="float-ai-badge" style="background:linear-gradient(135deg, #3b82f6, #6366f1); color:white; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; box-shadow:0 4px 12px rgba(59,130,246,0.35);">
           <i class="fa-solid fa-brain"></i>
         </div>
         <div>
