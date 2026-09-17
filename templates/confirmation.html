@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block title %}Complaint Submitted &bull; SmartCampus{% endblock %}
+
+{% block extra_css %}
+<style>
+  .receipt-card {
+    max-width: 680px;
+    margin: 0 auto;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px;
+    box-shadow: var(--shadow-md);
+  }
+  .receipt-header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .success-icon {
+    width: 64px;
+    height: 64px;
+    background: #dcfce7;
+    color: #16a34a;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin-bottom: 12px;
+  }
+  .ticket-banner {
+    background: var(--primary-light);
+    border: 1.5px dashed #93c5fd;
+    border-radius: 10px;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+  .ticket-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: 0.05em;
+  }
+  .receipt-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 24px;
+  }
+  .receipt-table th {
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    width: 38%;
+  }
+  .receipt-table td {
+    padding: 10px 12px;
+    font-size: 0.92rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-main);
+  }
+  .evidence-box {
+    margin-top: 16px;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .evidence-box img {
+    max-width: 100%;
+    max-height: 240px;
+    border-radius: 6px;
+    object-fit: cover;
+  }
+  .action-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="receipt-card">
+  <div class="receipt-header">
+    <div class="success-icon">
+      <i class="fa-solid fa-check"></i>
+    </div>
+    <h1 style="font-size: 1.6rem; font-weight: 800;">Complaint Registered!</h1>
+    <p style="color: var(--text-muted); font-size: 0.92rem; margin-top: 4px;">
+      Your issue has been automatically classified and assigned to the relevant campus team.
+    </p>
+  </div>
+
+  <!-- Ticket Number Banner -->
+  <div class="ticket-banner">
+    <div>
+      <div style="font-size: 0.76rem; font-weight: 700; color: var(--secondary); text-transform: uppercase;">Ticket Reference ID</div>
+      <div class="ticket-number" id="ticketIdDisplay">{{ complaint['id'] }}</div>
+    </div>
+    <button class="btn btn-secondary btn-sm" onclick="copyTicketId()">
+      <i class="fa-regular fa-copy"></i> Copy ID
+    </button>
+  </div>
+
+  <!-- Summary Table -->
+  <table class="receipt-table">
+    <tr>
+      <th>Issue Subject</th>
+      <td><strong>{{ complaint['title'] or complaint['description'][:45] }}</strong></td>
+    </tr>
+    <tr>
+      <th>Location</th>
+      <td><i class="fa-solid fa-location-dot" style="color:var(--primary);"></i> {{ complaint['location'] }}</td>
+    </tr>
+    <tr>
+      <th>AI Category</th>
+      <td>
+        <strong>{{ complaint['category'] }}</strong>
+        {% if complaint['confidence'] %}
+          <span style="font-size: 0.78rem; color: var(--text-muted); margin-left: 6px;">({{ complaint['confidence'] }}% match)</span>
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th>Priority / Severity</th>
+      <td>
+        <span class="badge badge-{{ complaint['priority']|lower }}">
+          {% if complaint['priority'] == 'Critical' %}<i class="fa-solid fa-triangle-exclamation"></i>
+          {% elif complaint['priority'] == 'High' %}<i class="fa-solid fa-fire-flame-curved"></i>
+          {% elif complaint['priority'] == 'Medium' %}<i class="fa-solid fa-circle-exclamation"></i>
+          {% else %}<i class="fa-solid fa-circle-check"></i>{% endif %}
+          {{ complaint['priority'] }}
+        </span>
+        <div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 4px;">{{ complaint['priority_reason'] }}</div>
+      </td>
+    </tr>
+    <tr>
+      <th>Assigned Department</th>
+      <td>
+        <strong style="color: var(--primary);">{{ complaint['department'] }}</strong>
+        <div style="font-size: 0.78rem; color: var(--secondary); margin-top: 2px;">
+          <i class="fa-solid fa-user-shield"></i> {{ complaint['assigned_officer'] or 'Department Officer' }}
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <th>SLA Target Resolution</th>
+      <td>
+        <span style="font-weight: 700; color: var(--high);">
+          <i class="fa-regular fa-clock"></i> {{ complaint['sla_target'] or 'Within 24 Hours' }}
+        </span>
+      </td>
+    </tr>
+    <tr>
+      <th>Current Status</th>
+      <td><span class="status-badge status-submitted"><i class="fa-solid fa-spinner fa-spin"></i> {{ complaint['status'] }}</span></td>
+    </tr>
+  </table>
+
+  {% if complaint['photo'] %}
+    <div class="evidence-box">
+      <div style="font-size: 0.78rem; font-weight: 700; color: var(--secondary); margin-bottom: 6px;">
+        <i class="fa-solid fa-paperclip"></i> Attached Evidence Photo:
+      </div>
+      <img src="{{ url_for('static', filename='uploads/' + complaint['photo']) }}" alt="Complaint Photo">
+    </div>
+  {% endif %}
+
+  <div class="action-buttons">
+    <a href="{{ url_for('track_ticket', complaint_id=complaint['id']) }}" class="btn btn-primary" style="flex: 1;">
+      <i class="fa-solid fa-magnifying-glass"></i> Track Live Status
+    </a>
+    <a href="{{ url_for('submit_complaint') }}" class="btn btn-secondary">
+      <i class="fa-solid fa-plus"></i> Submit Another
+    </a>
+    <button type="button" class="btn btn-secondary" onclick="window.print()">
+      <i class="fa-solid fa-print"></i> Print Receipt
+    </button>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function copyTicketId() {
+    const text = document.getElementById("ticketIdDisplay").innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      alert("Ticket ID copied to clipboard: " + text);
+    });
+  }
+</script>
+{% endblock %}

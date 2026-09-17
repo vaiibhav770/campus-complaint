@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+{% block title %}Register Account &bull; SmartCampus{% endblock %}
+
+{% block extra_css %}
+<style>
+  .register-card {
+    max-width: 660px;
+    margin: 24px auto 40px;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px 32px;
+    box-shadow: var(--shadow-md);
+  }
+  .register-header {
+    text-align: center;
+    margin-bottom: 26px;
+  }
+  .register-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .role-selector-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .role-radio-card {
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .role-radio-card:hover {
+    border-color: var(--primary);
+  }
+  .role-radio-card.active {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+  .role-radio-card input {
+    display: none;
+  }
+  .role-card-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    margin-top: 4px;
+  }
+  .remember-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    color: var(--secondary);
+    font-weight: 500;
+    margin: 16px 0 20px;
+  }
+  .remember-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary);
+    cursor: pointer;
+  }
+  @media (max-width: 600px) {
+    .form-row { grid-template-columns: 1fr; }
+    .role-selector-grid { grid-template-columns: 1fr; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="register-card">
+  <div class="register-header">
+    <div class="register-icon">
+      <i class="fa-solid fa-user-plus"></i>
+    </div>
+    <h1 style="font-size: 1.55rem; font-weight: 800;">Register for Smart Campus</h1>
+    <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 4px;">
+      Create your account once. Your login details will be saved for seamless access to complaint filing and tracking.
+    </p>
+  </div>
+
+  <form method="POST" action="{{ url_for('register') }}">
+    <!-- Role Radio Cards -->
+    <label style="margin-bottom:8px;">Choose Your Campus Role <span class="req">*</span></label>
+    <div class="role-selector-grid">
+      <label class="role-radio-card active" id="roleStudentCard" onclick="selectRegisterRole('student')">
+        <input type="radio" name="role" value="student" checked>
+        <i class="fa-solid fa-user-graduate" style="font-size: 1.2rem;"></i>
+        <div class="role-card-title">Student</div>
+      </label>
+
+      <label class="role-radio-card" id="roleFacultyCard" onclick="selectRegisterRole('faculty')">
+        <input type="radio" name="role" value="faculty">
+        <i class="fa-solid fa-chalkboard-user" style="font-size: 1.2rem;"></i>
+        <div class="role-card-title">Faculty</div>
+      </label>
+
+      <label class="role-radio-card" id="roleAdminCard" onclick="selectRegisterRole('admin')">
+        <input type="radio" name="role" value="admin">
+        <i class="fa-solid fa-shield-halved" style="font-size: 1.2rem;"></i>
+        <div class="role-card-title">Administrator</div>
+      </label>
+    </div>
+
+    <!-- Admin Passcode Field (Shown only when Administrator role is selected) -->
+    <div class="form-group" id="adminCodeGroup" style="display:none; background:#fff1f2; border:1px solid #fecdd3; border-radius:10px; padding:14px;">
+      <label style="color:#9f1239;"><i class="fa-solid fa-key"></i> Administrator Access Code <span class="req">*</span></label>
+      <input type="password" name="admin_passcode" id="adminPasscodeInput" placeholder="Enter campus admin code (e.g. ADMIN123)">
+      <div class="input-hint" style="color:#be123c;">Required for administrative privileges. Default setup code: <code>ADMIN123</code></div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Choose Username <span class="req">*</span></label>
+        <input type="text" name="username" placeholder="e.g. vaibhav or prof_narayan" required autofocus>
+      </div>
+      <div class="form-group">
+        <label>Create Password <span class="req">*</span></label>
+        <input type="password" name="password" placeholder="Create a secure password" required>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Full Name <span class="req">*</span></label>
+      <input type="text" name="full_name" placeholder="e.g. Vaibhav Sharma" required>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label id="identifierLabel">Student Roll Number <span class="req">*</span></label>
+        <input type="text" name="identifier" id="identifierInput" placeholder="e.g. 21CS1023" required>
+      </div>
+
+      <div class="form-group">
+        <label>Campus Department / Division</label>
+        <select name="department" id="departmentSelect">
+          <option value="Computer Science & Engineering">Computer Science & Engineering</option>
+          <option value="Electrical Engineering">Electrical Engineering</option>
+          <option value="Mechanical Engineering">Mechanical Engineering</option>
+          <option value="Civil Engineering">Civil Engineering</option>
+          <option value="Electronics & Communication">Electronics & Communication</option>
+          <option value="Biotechnology">Biotechnology</option>
+          <option value="Campus Estate & Maintenance">Campus Estate & Maintenance</option>
+          <option value="Administration Office">Administration Office</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>College Email Address</label>
+        <input type="email" name="email" placeholder="e.g. yourname@campus.edu">
+      </div>
+      <div class="form-group">
+        <label>Mobile Number</label>
+        <input type="tel" name="phone" placeholder="e.g. 9876543210">
+      </div>
+    </div>
+
+    <label class="remember-label">
+      <input type="checkbox" name="remember_me" value="1" checked>
+      <span>Save and remember my login credentials on this browser</span>
+    </label>
+
+    <div>
+      <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 1rem;">
+        <i class="fa-solid fa-check-circle"></i> Complete Registration &amp; Enter Portal
+      </button>
+    </div>
+  </form>
+
+  <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center; font-size: 0.88rem; color: var(--text-muted);">
+    Already registered previously?
+    <a href="{{ url_for('login') }}" style="color: var(--primary); font-weight: 700; text-decoration: none;">
+      Sign in to your account &rarr;
+    </a>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function selectRegisterRole(role) {
+    document.querySelectorAll(".role-radio-card").forEach(c => c.classList.remove("active"));
+    const radio = document.querySelector(`input[name="role"][value="${role}"]`);
+    if (radio) {
+      radio.checked = true;
+      radio.parentElement.classList.add("active");
+    }
+
+    const idLabel = document.getElementById("identifierLabel");
+    const idInput = document.getElementById("identifierInput");
+    const adminGroup = document.getElementById("adminCodeGroup");
+
+    if (role === "student") {
+      idLabel.innerHTML = 'Student Roll Number <span class="req">*</span>';
+      idInput.placeholder = 'e.g. 21CS1023';
+      adminGroup.style.display = "none";
+    } else if (role === "faculty") {
+      idLabel.innerHTML = 'Faculty Employee ID <span class="req">*</span>';
+      idInput.placeholder = 'e.g. FAC-108';
+      adminGroup.style.display = "none";
+    } else if (role === "admin") {
+      idLabel.innerHTML = 'Staff / Administrator ID <span class="req">*</span>';
+      idInput.placeholder = 'e.g. ADM-001';
+      adminGroup.style.display = "block";
+    }
+  }
+</script>
+{% endblock %}

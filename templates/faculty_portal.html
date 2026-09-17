@@ -1,0 +1,407 @@
+{% extends "base.html" %}
+{% block title %}Faculty Portal &bull; SmartCampus{% endblock %}
+
+{% block extra_css %}
+<style>
+  .faculty-banner {
+    background: linear-gradient(135deg, #78350f, #d97706);
+    color: white;
+    border-radius: var(--radius);
+    padding: 24px 32px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    box-shadow: var(--shadow-md);
+  }
+  .faculty-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .avatar-circle-faculty {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+  }
+  .tab-nav {
+    display: flex;
+    gap: 12px;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 24px;
+  }
+  .tab-link {
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--secondary);
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab-link.active {
+    color: #b45309;
+    border-bottom-color: #b45309;
+  }
+  .submission-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  .ai-card {
+    background: linear-gradient(180deg, #ffffff 0%, #fffbeb 100%);
+    border: 2px solid #fde68a;
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: 0 10px 25px -5px rgba(217, 119, 6, 0.1);
+    position: sticky;
+    top: 90px;
+  }
+  .hotline-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+  }
+  .hotline-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .hotline-icon {
+    width: 40px; height: 40px; border-radius: 8px; background: #fffbeb; color: #b45309; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+  }
+  .dropzone {
+    border: 2px dashed #cbd5e1; border-radius: 10px; padding: 18px; text-align: center; background: #f8fafc; cursor: pointer; position: relative;
+  }
+  .dropzone input[type="file"] {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;
+  }
+
+  @media (max-width: 900px) {
+    .submission-grid { grid-template-columns: 1fr; }
+    .ai-card { position: static; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Faculty Profile Banner -->
+<div class="faculty-banner">
+  <div class="faculty-info">
+    <div class="avatar-circle-faculty">
+      <i class="fa-solid fa-chalkboard-user"></i>
+    </div>
+    <div>
+      <h1 style="font-size: 1.4rem; font-weight: 800;">{{ g.user['full_name'] }}</h1>
+      <div style="font-size: 0.88rem; opacity: 0.95; margin-top: 2px;">
+        <span>Faculty ID: <strong>{{ g.user['identifier'] }}</strong></span> &bull;
+        <span>Department: <strong>{{ g.user['department'] or 'Academics' }}</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:16px; align-items:center;">
+    <div style="text-align:center; background:rgba(255,255,255,0.18); padding:8px 16px; border-radius:8px;">
+      <div style="font-size: 1.25rem; font-weight: 800;">{{ stats.total }}</div>
+      <div style="font-size: 0.72rem; text-transform:uppercase; letter-spacing:0.04em;">Reported</div>
+    </div>
+    <div style="text-align:center; background:rgba(255,255,255,0.18); padding:8px 16px; border-radius:8px;">
+      <div style="font-size: 1.25rem; font-weight: 800; color:#fde047;">{{ stats.open }}</div>
+      <div style="font-size: 0.72rem; text-transform:uppercase; letter-spacing:0.04em;">In Progress</div>
+    </div>
+    <div style="text-align:center; background:rgba(255,255,255,0.18); padding:8px 16px; border-radius:8px;">
+      <div style="font-size: 1.25rem; font-weight: 800; color:#86efac;">{{ stats.resolved }}</div>
+      <div style="font-size: 0.72rem; text-transform:uppercase; letter-spacing:0.04em;">Resolved</div>
+    </div>
+  </div>
+</div>
+
+<!-- Tabs Navigation -->
+<div class="tab-nav">
+  <a href="{{ url_for('faculty_portal', tab='submit') }}" class="tab-link {% if active_tab == 'submit' %}active{% endif %}">
+    <i class="fa-solid fa-triangle-exclamation"></i> Report Classroom / Lab Issue
+  </a>
+  <a href="{{ url_for('faculty_portal', tab='history') }}" class="tab-link {% if active_tab == 'history' %}active{% endif %}">
+    <i class="fa-solid fa-list-check"></i> Faculty Raised Issues ({{ complaints|length }})
+  </a>
+  <a href="{{ url_for('faculty_portal', tab='hotlines') }}" class="tab-link {% if active_tab == 'hotlines' %}active{% endif %}">
+    <i class="fa-solid fa-phone-volume"></i> Emergency Hotlines
+  </a>
+</div>
+
+{% if active_tab == 'history' %}
+  <!-- Tab: Faculty History -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">
+        <i class="fa-solid fa-clock-rotate-left" style="color:#b45309;"></i>
+        Academic Infrastructure Issues Log
+      </h2>
+      <a href="{{ url_for('faculty_portal', tab='submit') }}" class="btn btn-primary btn-sm">
+        <i class="fa-solid fa-plus"></i> New Report
+      </a>
+    </div>
+
+    {% if complaints %}
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        {% for c in complaints %}
+          <div style="background:#ffffff; border:1px solid var(--border); border-radius:10px; padding:18px 20px; box-shadow:var(--shadow-sm); display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
+            <div style="max-width:650px;">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                <span class="ticket-chip">{{ c['id'] }}</span>
+                <span class="badge badge-{{ c['priority']|lower }}">{{ c['priority'] }}</span>
+                <span style="font-size:0.78rem; color:var(--text-muted);"><i class="fa-regular fa-calendar"></i> {{ c['created_at'] }}</span>
+              </div>
+              <h3 style="font-size:1.1rem; font-weight:700; margin-bottom:4px;">{{ c['title'] or c['description'][:50] }}</h3>
+              <div style="font-size:0.86rem; color:var(--secondary); margin-bottom:6px;">
+                <i class="fa-solid fa-location-dot" style="color:var(--primary);"></i> {{ c['location'] }} &bull;
+                <strong style="color:var(--primary);">{{ c['department'] }}</strong>
+              </div>
+              <p style="font-size:0.88rem; color:var(--text-main); line-height:1.4;">{{ c['description'] }}</p>
+
+              {% if c['resolution_notes'] %}
+                <div style="background:#ecfdf5; border:1px solid #a7f3d0; border-radius:6px; padding:8px 12px; margin-top:10px; font-size:0.82rem; color:#064e3b;">
+                  <strong>Maintenance Action:</strong> {{ c['resolution_notes'] }}
+                </div>
+              {% endif %}
+            </div>
+
+            <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
+              <span class="status-badge status-{{ c['status']|lower|replace(' ', '-') }}">
+                {{ c['status'] }}
+              </span>
+              <a href="{{ url_for('track_ticket', complaint_id=c['id']) }}" class="btn btn-secondary btn-sm">
+                <i class="fa-solid fa-magnifying-glass"></i> Live Status
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="text-align:center; padding:40px; color:var(--text-muted);">
+        <p>No issues logged under your faculty account yet.</p>
+        <a href="{{ url_for('faculty_portal', tab='submit') }}" class="btn btn-primary" style="margin-top:14px;">
+          Report a Classroom or Lab Issue
+        </a>
+      </div>
+    {% endif %}
+  </div>
+
+{% elif active_tab == 'hotlines' %}
+  <!-- Tab: Emergency Hotlines -->
+  <div class="card">
+    <h2 class="card-title" style="margin-bottom:6px;">
+      <i class="fa-solid fa-phone-volume" style="color:#b45309;"></i>
+      Direct Maintenance Officers &amp; Emergency Escalation
+    </h2>
+    <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:18px;">
+      For active examinations, ongoing seminars, or acute hazards requiring immediate on-site response:
+    </p>
+
+    <div class="hotline-grid">
+      <div class="hotline-card">
+        <div class="hotline-icon"><i class="fa-solid fa-bolt"></i></div>
+        <div>
+          <div style="font-weight:700; font-size:0.92rem;">Chief Electrician</div>
+          <div style="font-size:0.8rem; color:var(--text-muted);">Ramesh Sharma</div>
+          <div style="font-size:0.84rem; font-weight:700; color:var(--primary); margin-top:2px;">Ext: 4401 &bull; 98765-01001</div>
+        </div>
+      </div>
+
+      <div class="hotline-card">
+        <div class="hotline-icon"><i class="fa-solid fa-network-wired"></i></div>
+        <div>
+          <div style="font-weight:700; font-size:0.92rem;">Network Operations (NOC)</div>
+          <div style="font-size:0.8rem; color:var(--text-muted);">Er. Arvind Kumar</div>
+          <div style="font-size:0.84rem; font-weight:700; color:var(--primary); margin-top:2px;">Ext: 4402 &bull; 98765-01002</div>
+        </div>
+      </div>
+
+      <div class="hotline-card">
+        <div class="hotline-icon"><i class="fa-solid fa-faucet-drip"></i></div>
+        <div>
+          <div style="font-weight:700; font-size:0.92rem;">Water Works &amp; Plumbing</div>
+          <div style="font-size:0.8rem; color:var(--text-muted);">Suresh Patil</div>
+          <div style="font-size:0.84rem; font-weight:700; color:var(--primary); margin-top:2px;">Ext: 4403 &bull; 98765-01003</div>
+        </div>
+      </div>
+
+      <div class="hotline-card">
+        <div class="hotline-icon"><i class="fa-solid fa-wind"></i></div>
+        <div>
+          <div style="font-weight:700; font-size:0.92rem;">Central HVAC &amp; Mechanical</div>
+          <div style="font-size:0.8rem; color:var(--text-muted);">Vikas Mehra</div>
+          <div style="font-size:0.84rem; font-weight:700; color:var(--primary); margin-top:2px;">Ext: 4404 &bull; 98765-01004</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% else %}
+  <!-- Tab: Submit Issue -->
+  <div class="submission-grid">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">
+          <i class="fa-solid fa-chalkboard" style="color:#b45309;"></i>
+          Report Academic Infrastructure Issue
+        </h2>
+        <span class="badge badge-high"><i class="fa-solid fa-graduation-cap"></i> Faculty Expedited</span>
+      </div>
+
+      <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+          <label>Classroom / Lab / Seminar Hall Location <span class="req">*</span></label>
+          <input type="text" name="location" id="location" placeholder="e.g. Lecture Theater 2, Science Block, or Robotics Lab" required oninput="triggerPrediction()">
+        </div>
+
+        <div class="form-group">
+          <label>Issue Title <span class="req">*</span></label>
+          <input type="text" name="title" id="title" placeholder="e.g. Ceiling Projector HDMI not displaying, class starting at 11 AM" required oninput="triggerPrediction()">
+        </div>
+
+        <div class="form-group">
+          <label>Detailed Description <span class="req">*</span></label>
+          <textarea name="description" id="description" rows="4" placeholder="Detail the technical failure, equipment model, and urgency..." required oninput="triggerPrediction()"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Urgency Escalation</label>
+          <select name="urgency_override" id="urgencyOverride" onchange="triggerPrediction()">
+            <option value="Normal">Normal Academic Priority (Standard SLA)</option>
+            <option value="High" selected>High Urgency &bull; Active Lecture / Lab in Progress (Expedited 8h SLA)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Attach Evidence Photo (Optional)</label>
+          <div class="dropzone" id="dropzone">
+            <input type="file" name="photo" id="photoInput" accept="image/*">
+            <i class="fa-regular fa-image" style="font-size:1.6rem; color:#b45309; margin-bottom:4px;"></i>
+            <div style="font-size:0.86rem; color:var(--secondary);">Upload equipment or error screen photo</div>
+          </div>
+        </div>
+
+        <div style="margin-top:24px;">
+          <button type="submit" class="btn btn-primary" style="width:100%; background:#b45309; border-color:#92400e;">
+            <i class="fa-solid fa-paper-plane"></i> Dispatch Academic Ticket
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Live AI Preview Panel -->
+    <aside class="ai-card">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid #fed7aa;">
+        <div style="background:linear-gradient(135deg, #d97706, #b45309); color:white; width:34px; height:34px; border-radius:8px; display:flex; align-items:center; justify-content:center;">
+          <i class="fa-solid fa-brain"></i>
+        </div>
+        <div>
+          <div style="font-weight:700; font-size:1.05rem;">AI Academic Triage</div>
+          <div style="font-size:0.76rem; color:var(--text-muted);">Expedited dispatch algorithm</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <div style="font-size:0.76rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Category</div>
+        <div style="font-size:1rem; font-weight:700; color:var(--text-main); margin-top:2px;" id="predCategory">Classroom &amp; Hardware</div>
+        <div style="background:#e2e8f0; height:6px; border-radius:4px; overflow:hidden; margin-top:6px;">
+          <div id="predConfidenceBar" style="background:linear-gradient(90deg, #d97706, #10b981); height:100%; width:0%; transition:width 0.4s ease;"></div>
+        </div>
+        <div style="font-size:0.75rem; color:var(--text-muted); margin-top:3px; display:flex; justify-content:space-between;">
+          <span>Confidence:</span>
+          <strong id="predConfidenceText">0%</strong>
+        </div>
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <div style="font-size:0.76rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Priority</div>
+        <div style="margin-top:4px;" id="predPriority">
+          <span class="badge badge-high" id="predPriorityBadge">High (Academic)</span>
+        </div>
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <div style="font-size:0.76rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Assigned Campus Unit</div>
+        <div style="font-size:0.92rem; font-weight:700; color:var(--primary); margin-top:2px;" id="predDepartment">
+          Central Computing &amp; Facilities
+        </div>
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <div style="font-size:0.76rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">SLA Target</div>
+        <div style="font-size:0.9rem; font-weight:600; color:var(--secondary); margin-top:2px;" id="predSla">
+          Within 8 Hours
+        </div>
+      </div>
+
+      <div style="background:#fffbeb; border-radius:8px; padding:10px 12px; font-size:0.8rem; color:#78350f; border-left:3px solid #b45309;">
+        <strong><i class="fa-solid fa-lightbulb"></i> Faculty Priority Active:</strong>
+        <div id="predReasonText" style="margin-top:2px;">Issues reported by faculty are automatically expedited to reduce lecture and lab downtime.</div>
+      </div>
+    </aside>
+  </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  let debounceTimer = null;
+  function triggerPrediction() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(fetchPrediction, 300);
+  }
+
+  async function fetchPrediction() {
+    const title = document.getElementById("title") ? document.getElementById("title").value : "";
+    const description = document.getElementById("description") ? document.getElementById("description").value : "";
+    const location = document.getElementById("location") ? document.getElementById("location").value : "";
+
+    if (!description.trim() && !title.trim()) return;
+
+    try {
+      const resp = await fetch("{{ url_for('api_predict') }}", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, description, location })
+      });
+      const data = await resp.json();
+      document.getElementById("predCategory").innerText = data.category;
+      document.getElementById("predConfidenceBar").style.width = data.confidence + "%";
+      document.getElementById("predConfidenceText").innerText = data.confidence + "%";
+
+      const urgency = document.getElementById("urgencyOverride").value;
+      const finalPrio = (urgency === 'High' && data.priority === 'Low') ? 'High' : data.priority;
+
+      const badge = document.getElementById("predPriorityBadge");
+      badge.className = "badge badge-" + finalPrio.toLowerCase();
+      badge.innerText = finalPrio + " (Faculty)";
+
+      document.getElementById("predDepartment").innerText = data.department;
+      document.getElementById("predSla").innerText = (urgency === 'High') ? 'Within 8 Hours (Expedited)' : `Within ${data.sla_hours} Hours`;
+      document.getElementById("predReasonText").innerText = data.priority_reason;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+</script>
+{% endblock %}

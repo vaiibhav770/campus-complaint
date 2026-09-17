@@ -1,0 +1,523 @@
+{% extends "base.html" %}
+{% block title %}Submit Campus Complaint &bull; SmartCampus{% endblock %}
+
+{% block extra_css %}
+<style>
+  .submission-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .quick-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+    background: #f1f5f9;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px dashed #cbd5e1;
+  }
+  .preset-label {
+    width: 100%;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 4px;
+  }
+  .preset-btn {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .preset-btn:hover {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  /* File upload dropzone */
+  .dropzone {
+    border: 2px dashed #cbd5e1;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    background: #f8fafc;
+    cursor: pointer;
+    transition: border-color 0.2s, background-color 0.2s;
+    position: relative;
+  }
+  .dropzone:hover {
+    border-color: var(--primary);
+    background: var(--primary-light);
+  }
+  .dropzone input[type="file"] {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .dropzone-icon {
+    font-size: 2rem;
+    color: var(--primary);
+    margin-bottom: 8px;
+  }
+  .dropzone-text {
+    font-size: 0.88rem;
+    color: var(--secondary);
+    font-weight: 500;
+  }
+  .preview-wrapper {
+    display: none;
+    margin-top: 12px;
+    position: relative;
+    max-width: 180px;
+  }
+  .preview-img {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+  }
+  .remove-preview-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--critical);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 0.75rem;
+    cursor: pointer;
+  }
+
+  /* AI Assistant Preview Card */
+  .ai-card {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border: 2px solid #93c5fd;
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.1);
+    position: sticky;
+    top: 90px;
+  }
+  .ai-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ai-badge-pulse {
+    background: linear-gradient(135deg, #3b82f6, #6366f1);
+    color: white;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
+  }
+  .ai-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-main);
+  }
+  .ai-subtitle {
+    font-size: 0.76rem;
+    color: var(--text-muted);
+  }
+  .prediction-field {
+    margin-bottom: 16px;
+  }
+  .prediction-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 4px;
+  }
+  .prediction-val {
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .confidence-bar-bg {
+    background: #e2e8f0;
+    height: 6px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 6px;
+  }
+  .confidence-bar-fill {
+    background: linear-gradient(90deg, #3b82f6, #10b981);
+    height: 100%;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+  .explain-box {
+    background: #f1f5f9;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.8rem;
+    color: var(--secondary);
+    margin-top: 14px;
+    border-left: 3px solid var(--primary);
+  }
+  .keyword-tag {
+    display: inline-block;
+    background: #e0e7ff;
+    color: #3730a3;
+    font-size: 0.74rem;
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin: 2px;
+    font-weight: 600;
+  }
+
+  @media (max-width: 900px) {
+    .submission-grid {
+      grid-template-columns: 1fr;
+    }
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+    .ai-card {
+      position: static;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="submission-grid">
+  <!-- Complaint Form Card -->
+  <div class="card">
+    <div class="card-header">
+      <h1 class="card-title">
+        <i class="fa-solid fa-file-circle-plus" style="color:var(--primary);"></i>
+        Log a Campus Complaint
+      </h1>
+      <span class="badge badge-low"><i class="fa-solid fa-bolt"></i> Auto-Routed</span>
+    </div>
+
+    <!-- Quick Demo Presets -->
+    <div class="quick-presets">
+      <div class="preset-label"><i class="fa-solid fa-wand-magic-sparkles"></i> Try Quick Demo Presets:</div>
+      <button type="button" class="preset-btn" onclick="applyPreset('electric')">⚡ Sparking Socket (Hostel)</button>
+      <button type="button" class="preset-btn" onclick="applyPreset('water')">🚰 Water Pipe Burst (Library)</button>
+      <button type="button" class="preset-btn" onclick="applyPreset('wifi')">📶 Wi-Fi Dropping (Lab 3)</button>
+      <button type="button" class="preset-btn" onclick="applyPreset('ac')">❄️ AC Warm (Seminar Hall)</button>
+      <button type="button" class="preset-btn" onclick="applyPreset('chair')">🪑 Broken Chairs (Room 108)</button>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" id="complaintForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Name <span class="req">*</span></label>
+          <input type="text" name="student_name" id="student_name" placeholder="e.g. Vaibhav Sharma" required>
+        </div>
+        <div class="form-group">
+          <label>Roll No / ID <span class="req">*</span></label>
+          <input type="text" name="roll_no" id="roll_no" placeholder="e.g. 21CS1023" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>College Email</label>
+          <input type="email" name="contact_email" id="contact_email" placeholder="e.g. vaibhav@campus.edu">
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" name="contact_phone" id="contact_phone" placeholder="e.g. 9876543210">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Exact Campus Location <span class="req">*</span></label>
+        <input type="text" name="location" id="location" placeholder="e.g. Block C, 2nd Floor, Room 204 or Library Washroom" required oninput="triggerPrediction()">
+        <div class="input-hint">Specify building, wing, floor, or lab to accelerate technician dispatch.</div>
+      </div>
+
+      <div class="form-group">
+        <label>Issue Title / Subject <span class="req">*</span></label>
+        <input type="text" name="title" id="title" placeholder="e.g. Wi-Fi router keeps disconnecting during online lectures" required oninput="triggerPrediction()">
+      </div>
+
+      <div class="form-group">
+        <label>Detailed Description <span class="req">*</span></label>
+        <textarea name="description" id="description" rows="4" placeholder="Describe what happened, any hazard or urgency, and current impact..." required oninput="triggerPrediction()"></textarea>
+        <div class="input-hint">Our AI engine continuously analyzes your text to determine category, severity, and department in real-time.</div>
+      </div>
+
+      <!-- Photo Attachment -->
+      <div class="form-group">
+        <label>Photo Attachment (Optional Evidence)</label>
+        <div class="dropzone" id="dropzone">
+          <input type="file" name="photo" id="photoInput" accept="image/*" onchange="handleFileSelect(event)">
+          <div class="dropzone-icon"><i class="fa-regular fa-image"></i></div>
+          <div class="dropzone-text">Click or drag &amp; drop an image (JPG, PNG, WEBP &bull; Max 16MB)</div>
+        </div>
+        <div class="preview-wrapper" id="previewWrapper">
+          <img id="imagePreview" class="preview-img" alt="Attached evidence preview">
+          <button type="button" class="remove-preview-btn" onclick="clearPhoto()" title="Remove photo">&times;</button>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px; display: flex; gap: 12px; align-items: center;">
+        <button type="submit" class="btn btn-primary" style="flex: 1;">
+          <i class="fa-solid fa-paper-plane"></i> Submit Complaint
+        </button>
+        <button type="reset" class="btn btn-secondary" onclick="resetAI()">
+          Reset
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Live AI Classification Card -->
+  <aside class="ai-card">
+    <div class="ai-header">
+      <div class="ai-badge-pulse">
+        <i class="fa-solid fa-brain"></i>
+      </div>
+      <div>
+        <div class="ai-title">Real-Time AI Triage</div>
+        <div class="ai-subtitle">Instant classification &amp; SLA estimation</div>
+      </div>
+    </div>
+
+    <!-- Category -->
+    <div class="prediction-field">
+      <div class="prediction-label">Auto-Detected Category</div>
+      <div class="prediction-val" id="predCategory">
+        <span>Wi-Fi &amp; Networking</span>
+      </div>
+      <div class="confidence-bar-bg">
+        <div class="confidence-bar-fill" id="predConfidenceBar" style="width: 85%;"></div>
+      </div>
+      <div style="font-size:0.75rem; color:var(--text-muted); margin-top:3px; display:flex; justify-content:space-between;">
+        <span>AI Model Confidence:</span>
+        <strong id="predConfidenceText">85%</strong>
+      </div>
+    </div>
+
+    <!-- Priority / Severity -->
+    <div class="prediction-field">
+      <div class="prediction-label">Predicted Severity / Priority</div>
+      <div class="prediction-val" id="predPriority">
+        <span class="badge badge-medium" id="predPriorityBadge"><i class="fa-solid fa-triangle-exclamation"></i> Medium</span>
+      </div>
+    </div>
+
+    <!-- Department -->
+    <div class="prediction-field">
+      <div class="prediction-label">Assigned Campus Department</div>
+      <div class="prediction-val" id="predDepartment" style="font-size:0.95rem; color:var(--primary);">
+        <i class="fa-solid fa-building-user"></i> <span>IT &amp; Network Operations Cell</span>
+      </div>
+    </div>
+
+    <!-- Officer & SLA -->
+    <div class="prediction-field">
+      <div class="prediction-label">Officer-in-Charge</div>
+      <div class="prediction-val" id="predOfficer" style="font-size:0.88rem; font-weight:600; color:var(--secondary);">
+        Er. Arvind Kumar (Network Admin)
+      </div>
+    </div>
+
+    <div class="prediction-field">
+      <div class="prediction-label">Estimated SLA Window</div>
+      <div class="prediction-val" id="predSla" style="font-size:0.92rem;">
+        <i class="fa-regular fa-clock" style="color:var(--medium);"></i> <span id="predSlaText">Within 12 Hours</span>
+      </div>
+    </div>
+
+    <!-- Explainability -->
+    <div class="explain-box" id="explainBox">
+      <div style="font-weight: 700; margin-bottom: 4px;"><i class="fa-solid fa-lightbulb"></i> Explainable AI Reasoning:</div>
+      <div id="predReasonText">Type your complaint to see real-time NLP reasoning and priority factors.</div>
+      <div id="predKeywords" style="margin-top: 6px;"></div>
+    </div>
+  </aside>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  let debounceTimer = null;
+
+  function triggerPrediction() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(fetchPrediction, 300);
+  }
+
+  async function fetchPrediction() {
+    const title = document.getElementById("title").value;
+    const description = document.getElementById("description").value;
+    const location = document.getElementById("location").value;
+
+    if (!description.trim() && !title.trim()) {
+      resetAI();
+      return;
+    }
+
+    try {
+      const resp = await fetch("{{ url_for('api_predict') }}", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, description, location })
+      });
+      const data = await resp.json();
+      updateAIPanel(data);
+    } catch (err) {
+      console.error("AI prediction error:", err);
+    }
+  }
+
+  function updateAIPanel(data) {
+    document.getElementById("predCategory").innerHTML = `<span>${data.category}</span>`;
+    document.getElementById("predConfidenceBar").style.width = `${data.confidence}%`;
+    document.getElementById("predConfidenceText").innerText = `${data.confidence}%`;
+
+    const prioBadge = document.getElementById("predPriorityBadge");
+    prioBadge.className = `badge badge-${data.priority.toLowerCase()}`;
+    const iconClass = data.priority === 'Critical' ? 'fa-triangle-exclamation' :
+                      data.priority === 'High' ? 'fa-fire-flame-curved' :
+                      data.priority === 'Medium' ? 'fa-circle-exclamation' : 'fa-circle-check';
+    prioBadge.innerHTML = `<i class="fa-solid ${iconClass}"></i> ${data.priority}`;
+
+    document.getElementById("predDepartment").innerHTML = `<i class="fa-solid fa-building-user"></i> <span>${data.department}</span>`;
+    document.getElementById("predOfficer").innerText = data.assigned_officer || "Campus Department Lead";
+    document.getElementById("predSlaText").innerText = `Within ${data.sla_hours} Hours (${data.sla_target_readable})`;
+
+    document.getElementById("predReasonText").innerText = data.priority_reason || "Based on matched keywords and category.";
+
+    const kwContainer = document.getElementById("predKeywords");
+    kwContainer.innerHTML = "";
+    if (data.matched_keywords && data.matched_keywords.length > 0) {
+      data.matched_keywords.forEach(kw => {
+        const tag = document.createElement("span");
+        tag.className = "keyword-tag";
+        tag.innerText = `#${kw}`;
+        kwContainer.appendChild(tag);
+      });
+    }
+  }
+
+  function resetAI() {
+    document.getElementById("predCategory").innerText = "Pending Input";
+    document.getElementById("predConfidenceBar").style.width = "0%";
+    document.getElementById("predConfidenceText").innerText = "0%";
+    const prioBadge = document.getElementById("predPriorityBadge");
+    prioBadge.className = "badge badge-low";
+    prioBadge.innerHTML = '<i class="fa-solid fa-circle-check"></i> Normal';
+    document.getElementById("predDepartment").innerHTML = '<i class="fa-solid fa-building-user"></i> <span>Pending Assignment</span>';
+    document.getElementById("predOfficer").innerText = "-";
+    document.getElementById("predSlaText").innerText = "-";
+    document.getElementById("predReasonText").innerText = "Type your complaint to see real-time NLP reasoning and priority factors.";
+    document.getElementById("predKeywords").innerHTML = "";
+  }
+
+  function applyPreset(type) {
+    const presets = {
+      electric: {
+        name: "Devansh Mehta",
+        roll: "22EE1045",
+        location: "Boys Hostel 3, Room 214",
+        title: "Sparking and burning smell from corridor switchboard",
+        desc: "Severe electrical sparks and a strong burning plastic smell coming from the main switch socket outside room 214. Danger of short circuit."
+      },
+      water: {
+        name: "Sanya Kapoor",
+        roll: "23CS2031",
+        location: "Central Library, Ground Floor Restroom",
+        title: "Burst water pipe causing corridor flooding",
+        desc: "The main water pipe under the basin burst open. High pressure water is overflowing and flooding the library corridor."
+      },
+      wifi: {
+        name: "Aakash Roy",
+        roll: "21IT3089",
+        location: "Academic Block B, Computer Lab 2",
+        title: "Wi-Fi access point not connecting, zero internet",
+        desc: "All systems in Computer Lab 2 are disconnected from campus Wi-Fi. Captive portal authentication fails with timeout."
+      },
+      ac: {
+        name: "Ishita Sen",
+        roll: "20ME1011",
+        location: "Seminar Hall 1",
+        title: "AC not cooling, blowing warm air during guest lecture",
+        desc: "The central split air conditioner is blowing hot air and compressor is rattling. Temperature inside hall is uncomfortably high."
+      },
+      chair: {
+        name: "Kunal Bansal",
+        roll: "22EC4018",
+        location: "Tutorial Room 108",
+        title: "Broken chairs with sharp screws in front rows",
+        desc: "Three classroom desks have loose hinges and broken wooden armrests, exposing sharp screws that pose an injury risk."
+      }
+    };
+
+    const p = presets[type];
+    if (p) {
+      document.getElementById("student_name").value = p.name;
+      document.getElementById("roll_no").value = p.roll;
+      document.getElementById("location").value = p.location;
+      document.getElementById("title").value = p.title;
+      document.getElementById("description").value = p.desc;
+      triggerPrediction();
+    }
+  }
+
+  function handleFileSelect(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const preview = document.getElementById("imagePreview");
+        preview.src = e.target.result;
+        document.getElementById("previewWrapper").style.display = "block";
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function clearPhoto() {
+    document.getElementById("photoInput").value = "";
+    document.getElementById("previewWrapper").style.display = "none";
+    document.getElementById("imagePreview").src = "";
+  }
+
+  // Run initial prediction on page load if default text exists
+  window.addEventListener("DOMContentLoaded", () => {
+    if (document.getElementById("description").value.trim()) {
+      triggerPrediction();
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,417 @@
+{% extends "base.html" %}
+{% block title %}Student Portal &bull; SmartCampus{% endblock %}
+
+{% block extra_css %}
+<style>
+  .profile-banner {
+    background: linear-gradient(135deg, #1e3a8a, #2563eb);
+    color: white;
+    border-radius: var(--radius);
+    padding: 24px 32px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    box-shadow: var(--shadow-md);
+  }
+  .profile-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .avatar-circle {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+  }
+  .tab-nav {
+    display: flex;
+    gap: 12px;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 24px;
+  }
+  .tab-link {
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--secondary);
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab-link.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+  }
+  .submission-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  /* AI Panel */
+  .ai-card {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border: 2px solid #93c5fd;
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.1);
+    position: sticky;
+    top: 90px;
+  }
+  .dropzone {
+    border: 2px dashed #cbd5e1;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    background: #f8fafc;
+    cursor: pointer;
+    position: relative;
+  }
+  .dropzone input[type="file"] {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;
+  }
+  .preview-wrapper {
+    display: none;
+    margin-top: 12px;
+    position: relative;
+    max-width: 180px;
+  }
+  .preview-img {
+    width: 100%; border-radius: 8px; border: 1px solid var(--border);
+  }
+  .remove-preview-btn {
+    position: absolute; top: -8px; right: -8px; background: var(--critical); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer;
+  }
+  .quick-presets {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px dashed #cbd5e1;
+  }
+  .preset-btn {
+    background: white; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 10px; font-size: 0.78rem; font-weight: 600; cursor: pointer;
+  }
+
+  @media (max-width: 900px) {
+    .submission-grid { grid-template-columns: 1fr; }
+    .ai-card { position: static; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Student Profile Banner -->
+<div class="profile-banner">
+  <div class="profile-info">
+    <div class="avatar-circle">
+      <i class="fa-solid fa-user-graduate"></i>
+    </div>
+    <div>
+      <h1 style="font-size: 1.4rem; font-weight: 800;">{{ g.user['full_name'] }}</h1>
+      <div style="font-size: 0.88rem; opacity: 0.9; margin-top: 2px;">
+        <span>Roll No: <strong>{{ g.user['identifier'] }}</strong></span> &bull;
+        <span>{{ g.user['department'] or 'Engineering' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:16px; align-items:center;">
+    <div style="text-align:center; background:rgba(255,255,255,0.15); padding:8px 16px; border-radius:8px;">
+      <div style="font-size: 1.25rem; font-weight: 800;">{{ stats.total }}</div>
+      <div style="font-size: 0.72rem; text-transform:uppercase; letter-spacing:0.04em;">My Total</div>
+    </div>
+    <div style="text-align:center; background:rgba(255,255,255,0.15); padding:8px 16px; border-radius:8px;">
+      <div style="font-size: 1.25rem; font-weight: 800; color:#fde047;">{{ stats.open }}</div>
+      <div style="font-size: 0.72rem; text-transform:uppercase; letter-spacing:0.04em;">Active</div>
+    </div>
+    <div style="text-align:center; background:rgba(255,255,255,0.15); padding:8px 16px; border-radius:8px;">
+      <div style="font-size: 1.25rem; font-weight: 800; color:#86efac;">{{ stats.resolved }}</div>
+      <div style="font-size: 0.72rem; text-transform:uppercase; letter-spacing:0.04em;">Resolved</div>
+    </div>
+  </div>
+</div>
+
+<!-- Tabs Navigation -->
+<div class="tab-nav">
+  <a href="{{ url_for('student_portal', tab='submit') }}" class="tab-link {% if active_tab == 'submit' %}active{% endif %}">
+    <i class="fa-solid fa-file-circle-plus"></i> Submit New Complaint
+  </a>
+  <a href="{{ url_for('student_portal', tab='history') }}" class="tab-link {% if active_tab == 'history' %}active{% endif %}">
+    <i class="fa-solid fa-list-check"></i> My Complaints ({{ my_complaints|length }})
+  </a>
+</div>
+
+{% if active_tab == 'history' %}
+  <!-- Tab: My Complaints History -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">
+        <i class="fa-solid fa-clock-rotate-left" style="color:var(--primary);"></i>
+        My Registered Complaints
+      </h2>
+      <a href="{{ url_for('student_portal', tab='submit') }}" class="btn btn-primary btn-sm">
+        <i class="fa-solid fa-plus"></i> New Complaint
+      </a>
+    </div>
+
+    {% if my_complaints %}
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        {% for c in my_complaints %}
+          <div style="background:#ffffff; border:1px solid var(--border); border-radius:10px; padding:18px 20px; box-shadow:var(--shadow-sm); display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
+            <div style="max-width:650px;">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                <span class="ticket-chip">{{ c['id'] }}</span>
+                <span class="badge badge-{{ c['priority']|lower }}">{{ c['priority'] }}</span>
+                <span style="font-size:0.78rem; color:var(--text-muted);"><i class="fa-regular fa-calendar"></i> {{ c['created_at'] }}</span>
+              </div>
+              <h3 style="font-size:1.1rem; font-weight:700; margin-bottom:4px;">{{ c['title'] or c['description'][:50] }}</h3>
+              <div style="font-size:0.86rem; color:var(--secondary); margin-bottom:6px;">
+                <i class="fa-solid fa-location-dot" style="color:var(--primary);"></i> {{ c['location'] }} &bull;
+                <strong style="color:var(--primary);">{{ c['department'] }}</strong>
+              </div>
+              <p style="font-size:0.88rem; color:var(--text-main); line-height:1.4;">{{ c['description'][:140] }}{% if c['description']|length > 140 %}...{% endif %}</p>
+
+              {% if c['resolution_notes'] %}
+                <div style="background:#ecfdf5; border:1px solid #a7f3d0; border-radius:6px; padding:8px 12px; margin-top:10px; font-size:0.82rem; color:#064e3b;">
+                  <strong>Technician Update:</strong> {{ c['resolution_notes'] }}
+                </div>
+              {% endif %}
+            </div>
+
+            <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
+              <span class="status-badge status-{{ c['status']|lower|replace(' ', '-') }}">
+                {{ c['status'] }}
+              </span>
+              <a href="{{ url_for('track_ticket', complaint_id=c['id']) }}" class="btn btn-secondary btn-sm">
+                <i class="fa-solid fa-magnifying-glass"></i> View Progress Timeline
+              </a>
+              {% if c['status'] == 'Resolved' and not c['student_rating'] %}
+                <span class="badge badge-high" style="font-size:0.72rem;">Pending Your Confirmation</span>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="text-align:center; padding:40px; color:var(--text-muted);">
+        <i class="fa-regular fa-clipboard" style="font-size:3rem; margin-bottom:12px; color:#cbd5e1;"></i>
+        <p>You haven't submitted any complaints yet.</p>
+        <a href="{{ url_for('student_portal', tab='submit') }}" class="btn btn-primary" style="margin-top:14px;">
+          Log Your First Complaint
+        </a>
+      </div>
+    {% endif %}
+  </div>
+
+{% else %}
+  <!-- Tab: Log New Issue -->
+  <div class="submission-grid">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">
+          <i class="fa-solid fa-file-pen" style="color:var(--primary);"></i>
+          Submit Issue (Student Desk)
+        </h2>
+        <span class="badge badge-low"><i class="fa-solid fa-bolt"></i> Auto-Triage Active</span>
+      </div>
+
+      <!-- Quick Demo Presets -->
+      <div class="quick-presets">
+        <div style="width:100%; font-size:0.76rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Quick Presets:</div>
+        <button type="button" class="preset-btn" onclick="applyPreset('wifi')">📶 Hostel Wi-Fi Down</button>
+        <button type="button" class="preset-btn" onclick="applyPreset('electric')">⚡ Socket Sparking</button>
+        <button type="button" class="preset-btn" onclick="applyPreset('water')">🚰 Tap Leak in Washroom</button>
+        <button type="button" class="preset-btn" onclick="applyPreset('chair')">🪑 Broken Chair in Room</button>
+      </div>
+
+      <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+          <label>Campus Location (Hostel / Room / Lab / Hall) <span class="req">*</span></label>
+          <input type="text" name="location" id="location" placeholder="e.g. Hostel 4, Room 302 or Block C 2nd Floor" required oninput="triggerPrediction()">
+        </div>
+
+        <div class="form-group">
+          <label>Issue Subject <span class="req">*</span></label>
+          <input type="text" name="title" id="title" placeholder="e.g. Wi-Fi router red light blinking and no internet" required oninput="triggerPrediction()">
+        </div>
+
+        <div class="form-group">
+          <label>Detailed Description <span class="req">*</span></label>
+          <textarea name="description" id="description" rows="4" placeholder="Describe what is broken, when it started, and how it impacts your study..." required oninput="triggerPrediction()"></textarea>
+        </div>
+
+        <!-- Photo Upload -->
+        <div class="form-group">
+          <label>Attach Evidence Photo (Optional)</label>
+          <div class="dropzone" id="dropzone">
+            <input type="file" name="photo" id="photoInput" accept="image/*" onchange="handleFileSelect(event)">
+            <i class="fa-regular fa-image" style="font-size:1.8rem; color:var(--primary); margin-bottom:6px;"></i>
+            <div style="font-size:0.86rem; color:var(--secondary);">Drop image here or click to upload (JPG, PNG)</div>
+          </div>
+          <div class="preview-wrapper" id="previewWrapper">
+            <img id="imagePreview" class="preview-img" alt="Attached evidence preview">
+            <button type="button" class="remove-preview-btn" onclick="clearPhoto()">&times;</button>
+          </div>
+        </div>
+
+        <div style="margin-top:24px;">
+          <button type="submit" class="btn btn-primary" style="width:100%;">
+            <i class="fa-solid fa-paper-plane"></i> Submit Ticket to Maintenance
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Live AI Preview Panel -->
+    <aside class="ai-card">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--border);">
+        <div style="background:linear-gradient(135deg, #3b82f6, #6366f1); color:white; width:34px; height:34px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1rem;">
+          <i class="fa-solid fa-brain"></i>
+        </div>
+        <div>
+          <div style="font-weight:700; font-size:1.05rem;">AI Assistant</div>
+          <div style="font-size:0.76rem; color:var(--text-muted);">Real-time triage preview</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <div style="font-size:0.76rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Predicted Category</div>
+        <div style="font-size:1rem; font-weight:700; color:var(--text-main); margin-top:2px;" id="predCategory">Pending Input</div>
+        <div style="background:#e2e8f0; height:6px; border-radius:4px; overflow:hidden; margin-top:6px;">
+          <div id="predConfidenceBar" style="background:linear-gradient(90deg, #3b82f6, #10b981); height:100%; width:0%; transition:width 0.4s ease;"></div>
+        </div>
+        <div style="font-size:0.75rem; color:var(--text-muted); margin-top:3px; display:flex; justify-content:space-between;">
+          <span>Confidence:</span>
+          <strong id="predConfidenceText">0%</strong>
+        </div>
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <div style="font-size:0.76rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Priority</div>
+        <div style="margin-top:4px;" id="predPriority">
+          <span class="badge badge-low" id="predPriorityBadge">Low</span>
+        </div>
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <div style="font-size:0.76rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Routing Department</div>
+        <div style="font-size:0.92rem; font-weight:700; color:var(--primary); margin-top:2px;" id="predDepartment">
+          Pending Assignment
+        </div>
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <div style="font-size:0.76rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Estimated SLA</div>
+        <div style="font-size:0.9rem; font-weight:600; color:var(--secondary); margin-top:2px;" id="predSla">
+          -
+        </div>
+      </div>
+
+      <div style="background:#f1f5f9; border-radius:8px; padding:10px 12px; font-size:0.8rem; color:var(--secondary); border-left:3px solid var(--primary);">
+        <strong><i class="fa-solid fa-lightbulb"></i> Reasoning:</strong>
+        <div id="predReasonText" style="margin-top:2px;">Type your issue description to activate real-time NLP classification.</div>
+      </div>
+    </aside>
+  </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  let debounceTimer = null;
+  function triggerPrediction() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(fetchPrediction, 300);
+  }
+
+  async function fetchPrediction() {
+    const title = document.getElementById("title").value;
+    const description = document.getElementById("description").value;
+    const location = document.getElementById("location").value;
+
+    if (!description.trim() && !title.trim()) return;
+
+    try {
+      const resp = await fetch("{{ url_for('api_predict') }}", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, description, location })
+      });
+      const data = await resp.json();
+      document.getElementById("predCategory").innerText = data.category;
+      document.getElementById("predConfidenceBar").style.width = data.confidence + "%";
+      document.getElementById("predConfidenceText").innerText = data.confidence + "%";
+
+      const badge = document.getElementById("predPriorityBadge");
+      badge.className = "badge badge-" + data.priority.toLowerCase();
+      badge.innerText = data.priority;
+
+      document.getElementById("predDepartment").innerText = data.department;
+      document.getElementById("predSla").innerText = `Within ${data.sla_hours} Hours`;
+      document.getElementById("predReasonText").innerText = data.priority_reason;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function applyPreset(type) {
+    const presets = {
+      wifi: {
+        loc: "Hostel 3, Room 214",
+        title: "Wi-Fi disconnecting continuously in hostel wing",
+        desc: "The Wi-Fi access point is dropping packets and captive portal authentication fails every few minutes."
+      },
+      electric: {
+        loc: "Hostel 2, Corridor Switchboard",
+        title: "Sparking switch socket and burning smell",
+        desc: "Visible electrical sparks and a strong burning plastic smell coming from the socket outside room 204."
+      },
+      water: {
+        loc: "Hostel 1, Ground Floor Restroom",
+        title: "Tap leaking water and drainage choked",
+        desc: "The washroom tap handle is broken and continuous high pressure water is overflowing onto the floor."
+      },
+      chair: {
+        loc: "Hostel 4, Study Hall",
+        title: "Broken chairs with sharp screws",
+        desc: "Two study chairs have broken armrests and exposed sharp metal screws."
+      }
+    };
+    if (presets[type]) {
+      document.getElementById("location").value = presets[type].loc;
+      document.getElementById("title").value = presets[type].title;
+      document.getElementById("description").value = presets[type].desc;
+      triggerPrediction();
+    }
+  }
+
+  function handleFileSelect(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        document.getElementById("imagePreview").src = evt.target.result;
+        document.getElementById("previewWrapper").style.display = "block";
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function clearPhoto() {
+    document.getElementById("photoInput").value = "";
+    document.getElementById("previewWrapper").style.display = "none";
+  }
+</script>
+{% endblock %}
