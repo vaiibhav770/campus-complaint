@@ -1,0 +1,92 @@
+# =============================================================================
+# Smart Campus AI - Git Ignore Configuration
+# Protects confidential credentials, secrets, databases, and temporary artifacts
+# =============================================================================
+
+# 1. Confidential Environment Variables & Secret Keys (CRITICAL)
+.env
+.env.local
+.env.development
+.env.production
+.env.*
+!.env.example
+*.env
+
+# 2. Local Databases & Dumps (Contains user records & grievance history)
+*.db
+*.sqlite
+*.sqlite3
+complaints.db
+dump/
+*.dump
+*.sql
+
+# 3. User Uploaded Files & Camera Evidence (Confidential physical fault photos)
+static/uploads/*
+!static/uploads/.gitkeep
+
+# 4. Python Bytecode, Caches & Build Artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# 5. Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# 6. Testing, Linting & Coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# 7. Server Logs & Runtime Data
+*.log
+logs/
+instance/
+.webassets-cache
+
+# 8. Operating System & IDE Specific Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+.idea/
+.vscode/
+*.swp
+*.swo
+*~

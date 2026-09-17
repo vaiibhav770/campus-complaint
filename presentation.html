@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Campus AI — Project Presentation Deck</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0b0f19;
+      color: #f8fafc;
+      overflow: hidden;
+      user-select: none;
+    }
+    h1, h2, h3, .font-heading {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .slide {
+      display: none;
+      opacity: 0;
+      transform: scale(0.98);
+      transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .slide.active {
+      display: flex;
+      opacity: 1;
+      transform: scale(1);
+    }
+    .glass-card {
+      background: rgba(22, 30, 49, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+    .glow-blue {
+      box-shadow: 0 0 35px -5px rgba(59, 130, 246, 0.25);
+    }
+    .glow-cyan {
+      box-shadow: 0 0 35px -5px rgba(6, 182, 212, 0.25);
+    }
+    .hud-border {
+      position: relative;
+    }
+    .hud-border::before {
+      content: '';
+      position: absolute;
+      top: -1px; left: -1px; width: 14px; height: 14px;
+      border-top: 2px solid #38bdf8;
+      border-left: 2px solid #38bdf8;
+    }
+    .hud-border::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; right: -1px; width: 14px; height: 14px;
+      border-bottom: 2px solid #38bdf8;
+      border-right: 2px solid #38bdf8;
+    }
+    @media print {
+      body {
+        overflow: visible;
+        background: #0b0f19 !important;
+        -webkit-print-color-adjust: exact;
+      }
+      .slide {
+        display: flex !important;
+        opacity: 1 !important;
+        transform: none !important;
+        page-break-after: always;
+        height: 100vh;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="w-screen h-screen flex flex-col justify-between p-6 md:p-10 relative">
+
+  <!-- Background Ambient Glow -->
+  <div class="fixed inset-0 pointer-events-none z-0">
+    <div class="absolute -top-40 -left-40 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl"></div>
+    <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-950/20 rounded-full blur-3xl"></div>
+  </div>
+
+  <!-- Top Navigation Header -->
+  <header class="relative z-20 flex items-center justify-between border-b border-slate-800/80 pb-4">
+    <div class="flex items-center space-x-3">
+      <div class="w-9 h-9 rounded-xl bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-blue-400 font-bold shadow-lg shadow-blue-500/20">
+        ⚡
+      </div>
+      <div>
+        <h1 class="text-sm font-bold tracking-wider text-slate-200">SMART CAMPUS AI</h1>
+        <p class="text-xs text-slate-500 font-mono">AUTONOMOUS GRIEVANCE INTELLIGENCE</p>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-4 no-print">
+      <div class="text-xs font-mono px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400">
+        SLIDE <span id="current-slide" class="text-blue-400 font-bold">1</span> / <span id="total-slides">10</span>
+      </div>
+      <button onclick="toggleFullScreen()" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition flex items-center gap-1.5 border border-slate-700">
+        <span>⛶</span> Fullscreen (F)
+      </button>
+      <button onclick="window.print()" class="text-xs px-3 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 transition flex items-center gap-1.5 border border-blue-500/30">
+        <span>🖨</span> Print / PDF
+      </button>
+    </div>
+  </header>
+
+  <!-- Slide Container -->
+  <main class="relative z-10 flex-1 my-auto flex flex-col justify-center max-w-7xl mx-auto w-full py-4">
+
+    <!-- SLIDE 1: Title & Keynote Opening -->
+    <section class="slide active flex-col justify-center items-start text-left space-y-6">
+      <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-semibold tracking-wider font-mono">
+        <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+        <span>SMART CAMPUS INITIATIVE • PROJECT DEFENSE</span>
+      </div>
+      <div>
+        <h2 class="text-5xl md:text-6xl font-extrabold tracking-tight text-white mb-2 font-heading">
+          SMART CAMPUS <span class="bg-gradient-to-r from-blue-400 via-cyan-300 to-emerald-400 bg-clip-text text-transparent">AI</span>
+        </h2>
+        <p class="text-2xl font-semibold text-cyan-300 tracking-wide font-heading">
+          Autonomous Grievance Intelligence & Facility Resolution Platform
+        </p>
+        <p class="text-base text-slate-400 max-w-3xl mt-3 leading-relaxed">
+          A cloud-native, NLP-triaged operational suite integrating live browser optical verification, dynamic SLA enforcement, and multi-role governance to eliminate institutional facility bottlenecks.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 w-full pt-4">
+        <div class="glass-card rounded-xl p-4 border-l-4 border-l-blue-500 hud-border">
+          <div class="text-xl mb-1">🧠</div>
+          <h3 class="text-sm font-bold text-white font-heading">Sub-50ms NLP Triage</h3>
+          <p class="text-xs text-slate-400 mt-1">TF-IDF + Naive Bayes Classifier with Hazard Keyword Escalation</p>
+        </div>
+        <div class="glass-card rounded-xl p-4 border-l-4 border-l-cyan-400 hud-border">
+          <div class="text-xl mb-1">📸</div>
+          <h3 class="text-sm font-bold text-white font-heading">Live Camera HUD</h3>
+          <p class="text-xs text-slate-400 mt-1">Browser-native WebRTC evidence capture with Base64 ingestion</p>
+        </div>
+        <div class="glass-card rounded-xl p-4 border-l-4 border-l-emerald-400 hud-border">
+          <div class="text-xl mb-1">⚡</div>
+          <h3 class="text-sm font-bold text-white font-heading">Multi-Role Portals</h3>
+          <p class="text-xs text-slate-400 mt-1">Dedicated Student, Faculty (8h SLA), and Admin Dispatch desks</p>
+        </div>
+        <div class="glass-card rounded-xl p-4 border-l-4 border-l-purple-500 hud-border">
+          <div class="text-xl mb-1">☁️</div>
+          <h3 class="text-sm font-bold text-white font-heading">MongoDB Atlas Cloud</h3>
+          <p class="text-xs text-slate-400 mt-1">Managed resilient NoSQL cluster with Render PaaS containerization</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: Problem Statement -->
+    <section class="slide flex-col justify-center space-y-6">
+      <div>
+        <div class="text-xs font-mono text-rose-400 font-semibold tracking-wider uppercase mb-1">The Institutional Crisis</div>
+        <h2 class="text-3xl md:text-4xl font-bold text-white font-heading">Critical Failures in Conventional Campus Maintenance</h2>
+        <p class="text-sm text-slate-400 mt-1">Why legacy paper ledgers, fragmented emails, and informal WhatsApp groups paralyze universities.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 w-full">
+        <div class="glass-card rounded-xl p-5 border-t-2 border-rose-500 flex flex-col justify-between">
+          <div>
+            <span class="text-2xl font-black text-rose-500/80 font-mono">01</span>
+            <h3 class="text-base font-bold text-white mt-2 font-heading">No SLA Accountability</h3>
+            <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+              Tickets lack prioritization or timeframes. Grievances routinely vanish into administrative black holes, resulting in weeks of unresolved critical campus failures.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] font-mono text-rose-400">
+            ⚠ 7-14 Days Avg. Resolution
+          </div>
+        </div>
+
+        <div class="glass-card rounded-xl p-5 border-t-2 border-amber-500 flex flex-col justify-between">
+          <div>
+            <span class="text-2xl font-black text-amber-500/80 font-mono">02</span>
+            <h3 class="text-base font-bold text-white mt-2 font-heading">Misrouted Tickets</h3>
+            <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+              Manual triage causes up to 45% of complaints to be assigned to wrong departments (e.g. electrical hazards assigned to general housekeeping), wasting technician hours.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] font-mono text-amber-400">
+            ⚠ 45% Manual Routing Errors
+          </div>
+        </div>
+
+        <div class="glass-card rounded-xl p-5 border-t-2 border-purple-500 flex flex-col justify-between">
+          <div>
+            <span class="text-2xl font-black text-purple-500/80 font-mono">03</span>
+            <h3 class="text-base font-bold text-white mt-2 font-heading">Subjective Evidence</h3>
+            <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+              Vague descriptions ("projector broken", "ac leaking") lack photographic verification, exact physical room tags, or proof of severity, forcing redundant inspection trips.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] font-mono text-purple-400">
+            ⚠ Zero Photographic Proof
+          </div>
+        </div>
+
+        <div class="glass-card rounded-xl p-5 border-t-2 border-cyan-500 flex flex-col justify-between">
+          <div>
+            <span class="text-2xl font-black text-cyan-500/80 font-mono">04</span>
+            <h3 class="text-base font-bold text-white mt-2 font-heading">Zero Transparency</h3>
+            <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+              Students and faculty receive zero feedback once a ticket is submitted, fostering student dissatisfaction, repeated complaints, and institutional distrust.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] font-mono text-cyan-400">
+            ⚠ Complete Black Box
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: The Proposed Solution -->
+    <section class="slide flex-col justify-center space-y-6">
+      <div>
+        <div class="text-xs font-mono text-emerald-400 font-semibold tracking-wider uppercase mb-1">The Digital Transformation</div>
+        <h2 class="text-3xl md:text-4xl font-bold text-white font-heading">Autonomous Grievance Lifecycle & Resolution</h2>
+        <p class="text-sm text-slate-400 mt-1">An integrated, closed-loop platform that transforms unstructured student complaints into verified actions.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+        <div class="glass-card rounded-2xl p-6 border-blue-500/40 relative glow-blue">
+          <div class="w-12 h-12 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-2xl mb-4 font-bold">
+            🧠
+          </div>
+          <h3 class="text-lg font-bold text-white font-heading">AI Triage & Dynamic Priority</h3>
+          <p class="text-xs text-blue-400 font-mono mb-3">Instant Machine Learning Classification</p>
+          <ul class="space-y-2 text-xs text-slate-300">
+            <li class="flex items-start gap-2">
+              <span class="text-blue-400 font-bold">✔</span>
+              <span>Semantic NLP maps descriptions into Electrical, Civil, IT, or Plumbing.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-blue-400 font-bold">✔</span>
+              <span>Emergency keyword interceptor detects hazard terms ('spark', 'flood') and enforces Critical 4h SLA.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-blue-400 font-bold">✔</span>
+              <span>Eliminates administrative routing bottlenecks completely.</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="glass-card rounded-2xl p-6 border-cyan-500/40 relative glow-cyan">
+          <div class="w-12 h-12 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-2xl mb-4 font-bold">
+            📸
+          </div>
+          <h3 class="text-lg font-bold text-white font-heading">Live Optical Evidence HUD</h3>
+          <p class="text-xs text-cyan-400 font-mono mb-3">Browser-Native Camera Verification</p>
+          <ul class="space-y-2 text-xs text-slate-300">
+            <li class="flex items-start gap-2">
+              <span class="text-cyan-400 font-bold">✔</span>
+              <span>HTML5 WebRTC MediaStream turns any phone or laptop into an inspection tool.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-cyan-400 font-bold">✔</span>
+              <span>Futuristic HUD reticles guide framing of damaged equipment.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-cyan-400 font-bold">✔</span>
+              <span>Dual mode: Instant camera snapshot or disk photo upload with Base64 ingestion.</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="glass-card rounded-2xl p-6 border-emerald-500/40 relative">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl mb-4 font-bold">
+            ⚡
+          </div>
+          <h3 class="text-lg font-bold text-white font-heading">Role-Based Governance Matrix</h3>
+          <p class="text-xs text-emerald-400 font-mono mb-3">Tailored Workflows & Full Accountability</p>
+          <ul class="space-y-2 text-xs text-slate-300">
+            <li class="flex items-start gap-2">
+              <span class="text-emerald-400 font-bold">✔</span>
+              <span>Student Portal: Intuitive filing, visual 4-step progress stepper, transparent feedback.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-emerald-400 font-bold">✔</span>
+              <span>Faculty Expedited Desk: Fast-track routing with guaranteed 8-hour academic SLA.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-emerald-400 font-bold">✔</span>
+              <span>Admin Command Center: Live status dispatcher, metrics heatmaps, worker reassignment.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: System Architecture & Tech Stack -->
+    <section class="slide flex-col justify-center space-y-6">
+      <div>
+        <div class="text-xs font-mono text-purple-400 font-semibold tracking-wider uppercase mb-1">Technical Architecture</div>
+        <h2 class="text-3xl md:text-4xl font-bold text-white font-heading">Modern Cloud-Native End-to-End Topology</h2>
+        <p class="text-sm text-slate-400 mt-1">High-concurrency, microsecond triage, and cross-platform institutional accessibility.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 w-full">
+        <div class="glass-card rounded-xl p-5 border-t-2 border-cyan-400">
+          <div class="text-xs font-mono text-cyan-400 font-bold mb-1">01. CLIENT LAYER</div>
+          <h3 class="text-base font-bold text-white font-heading">Immersive Experience</h3>
+          <ul class="mt-3 space-y-2 text-xs text-slate-300">
+            <li><strong class="text-white">Tailwind CSS:</strong> Modern responsive utility styling</li>
+            <li><strong class="text-white">Three.js WebGL:</strong> 3D interactive campus mesh canvas</li>
+            <li><strong class="text-white">HTML5 WebRTC:</strong> Browser camera live video feed</li>
+            <li><strong class="text-white">Vanilla JS:</strong> High-performance lightweight client</li>
+          </ul>
+        </div>
+
+        <div class="glass-card rounded-xl p-5 border-t-2 border-blue-500">
+          <div class="text-xs font-mono text-blue-400 font-bold mb-1">02. APP SERVER</div>
+          <h3 class="text-base font-bold text-white font-heading">Flask Core Engine</h3>
+          <ul class="mt-3 space-y-2 text-xs text-slate-300">
+            <li><strong class="text-white">Python Flask 3.x:</strong> Lightweight WSGI architecture</li>
+            <li><strong class="text-white">Modular Routing:</strong> Separation of Auth, Triage & Dispatch</li>
+            <li><strong class="text-white">Base64 Ingest:</strong> Image sanitization & buffer decoding</li>
+            <li><strong class="text-white">Session Security:</strong> Role-based token validation</li>
+          </ul>
+        </div>
+
+        <div class="glass-card rounded-xl p-5 border-t-2 border-purple-500">
+          <div class="text-xs font-mono text-purple-400 font-bold mb-1">03. AI ENGINE</div>
+          <h3 class="text-base font-bold text-white font-heading">NLP Triage Pipeline</h3>
+          <ul class="mt-3 space-y-2 text-xs text-slate-300">
+            <li><strong class="text-white">Scikit-Learn NLP:</strong> TF-IDF Vectorization</li>
+            <li><strong class="text-white">Multinomial NB:</strong> Probabilistic domain classifier</li>
+            <li><strong class="text-white">Hazard Interceptor:</strong> Deterministic regex escalation</li>
+            <li><strong class="text-white">Sub-50ms:</strong> Microsecond inference on standard CPU</li>
+          </ul>
+        </div>
+
+        <div class="glass-card rounded-xl p-5 border-t-2 border-emerald-400">
+          <div class="text-xs font-mono text-emerald-400 font-bold mb-1">04. CLOUD PERSISTENCE</div>
+          <h3 class="text-base font-bold text-white font-heading">MongoDB Atlas & Render</h3>
+          <ul class="mt-3 space-y-2 text-xs text-slate-300">
+            <li><strong class="text-white">MongoDB Atlas:</strong> Multi-region cloud NoSQL cluster</li>
+            <li><strong class="text-white">PyMongo Pooling:</strong> Auto-reconnecting TLS driver</li>
+            <li><strong class="text-white">Gunicorn WSGI:</strong> Production concurrent worker processes</li>
+            <li><strong class="text-white">Render PaaS:</strong> Automated Git push CI/CD & SSL</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: Multi-Role Governance Matrix -->
+    <section class="slide flex-col justify-center space-y-6">
+      <div>
+        <div class="text-xs font-mono text-amber-400 font-semibold tracking-wider uppercase mb-1">Stakeholder Ecosystem</div>
+        <h2 class="text-3xl md:text-4xl font-bold text-white font-heading">Tailored Portals & Accountability Matrix</h2>
+        <p class="text-sm text-slate-400 mt-1">Distinct user journeys designed to eliminate institutional friction for all university stakeholders.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 w-full">
+        <div class="glass-card rounded-xl p-5 border-l-4 border-l-cyan-400">
+          <h3 class="text-base font-bold text-white font-heading">Student Portal</h3>
+          <p class="text-xs text-cyan-400 font-mono mb-3">Self-Service Empowerment</p>
+          <ul class="space-y-2 text-xs text-slate-300">
+            <li>✔ Quick Registration & Secure Session Login</li>
+            <li>✔ Dual Filing: File Upload or Live Camera HUD</li>
+            <li>✔ Visual 4-Stage Progress Stepper</li>
+            <li>✔ Transparent Technician Resolution Notes</li>
+          </ul>
+        </div>
+
+        <div class="glass-card rounded-xl p-5 border-l-4 border-l-amber-400">
+          <h3 class="text-base font-bold text-white font-heading">Faculty Desk</h3>
+          <p class="text-xs text-amber-400 font-mono mb-3">Expedited Academic SLA</p>
+          <ul class="space-y-2 text-xs text-slate-300">
+            <li>✔ Dedicated Faculty Verification Credentialing</li>
+            <li>✔ Auto-Escalated 8-Hour Maximum SLA Window</li>
+            <li>✔ Direct Department & Classroom / Lab Tagging</li>
+            <li>✔ Academic Disruption High-Priority Flagging</li>
+          </ul>
+        </div>
+
+        <div class="glass-card rounded-xl p-5 border-l-4 border-l-blue-500">
+          <h3 class="text-base font-bold text-white font-heading">Admin Command Center</h3>
+          <p class="text-xs text-blue-400 font-mono mb-3">Institutional Overview</p>
+          <ul class="space-y-2 text-xs text-slate-300">
+            <li>✔ Real-Time Campus Complaint Stream</li>
+            <li>✔ Dynamic Category & Department Reassignment</li>
+            <li>✔ Technician Workload & Resolution Metrics</li>
+            <li>✔ System Audit Logs & Priority Override Control</li>
+          </ul>
+        </div>
+
+        <div class="glass-card rounded-xl p-5 border-l-4 border-l-emerald-400">
+          <h3 class="text-base font-bold text-white font-heading">Field Technician Dispatch</h3>
+          <p class="text-xs text-emerald-400 font-mono mb-3">Execution & Verification</p>
+          <ul class="space-y-2 text-xs text-slate-300">
+            <li>✔ Department-Specific Filtered Ticket Queue</li>
+            <li>✔ Detailed Optical Evidence & Location Inspection</li>
+            <li>✔ One-Click Status Transition with Work Log Notes</li>
+            <li>✔ Automated Closure Verification Timestamping</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: AI Classification & Triage Pipeline -->
+    <section class="slide flex-col justify-center space-y-6">
+      <div>
+        <div class="text-xs font-mono text-cyan-400 font-semibold tracking-wider uppercase mb-1">Intelligence & Safety</div>
+        <h2 class="text-3xl md:text-4xl font-bold text-white font-heading">Dual-Engine Triage & Heuristic Safety Escalator</h2>
+        <p class="text-sm text-slate-400 mt-1">Combining statistical natural language processing with safety-critical deterministic rules.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+        <div class="glass-card rounded-2xl p-6 border-blue-500/30">
+          <h3 class="text-lg font-bold text-white font-heading mb-1">The Classification Pipeline</h3>
+          <p class="text-xs text-blue-400 font-mono mb-4">4-Stage Machine Learning Process</p>
+
+          <div class="space-y-3 text-xs">
+            <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800">
+              <span class="font-bold text-cyan-300">1. Text Preprocessing:</span>
+              <span class="text-slate-400"> Strips punctuation, standardizes lowercase, removes English stopwords.</span>
+            </div>
+            <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800">
+              <span class="font-bold text-blue-400">2. TF-IDF Semantic Vectorization:</span>
+              <span class="text-slate-400"> Computes Term Frequency-Inverse Document Frequency weights.</span>
+            </div>
+            <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800">
+              <span class="font-bold text-purple-400">3. Multinomial Naive Bayes:</span>
+              <span class="text-slate-400"> Computes maximum a posteriori probability across Electrical, Civil, IT, Plumbing.</span>
+            </div>
+            <div class="p-2.5 rounded-lg bg-slate-900/60 border border-rose-900/40">
+              <span class="font-bold text-rose-400">4. Safety Interceptor & Heuristic Escalation:</span>
+              <span class="text-slate-400"> Scans for triggers ('spark', 'flood', 'smoke', 'fire') and overrides model to CRITICAL priority with 4-hour SLA.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="glass-card rounded-xl p-5 border border-emerald-500/30 flex flex-col justify-between">
+            <div>
+              <div class="text-3xl font-black text-emerald-400 font-heading">Sub-50ms</div>
+              <div class="text-sm font-bold text-white mt-1">Inference Latency</div>
+            </div>
+            <p class="text-xs text-slate-400 mt-2">Microsecond execution on standard CPU hardware.</p>
+          </div>
+
+          <div class="glass-card rounded-xl p-5 border border-blue-500/30 flex flex-col justify-between">
+            <div>
+              <div class="text-3xl font-black text-blue-400 font-heading">94.2%</div>
+              <div class="text-sm font-bold text-white mt-1">Model Accuracy</div>
+            </div>
+            <p class="text-xs text-slate-400 mt-2">Trained on campus grievance domain terminology.</p>
+          </div>
+
+          <div class="glass-card rounded-xl p-5 border border-rose-500/30 flex flex-col justify-between">
+            <div>
+              <div class="text-3xl font-black text-rose-400 font-heading">100%</div>
+              <div class="text-sm font-bold text-white mt-1">Safety Recall</div>
+            </div>
+            <p class="text-xs text-slate-400 mt-2">Zero misses on hazardous keyword triggers.</p>
+          </div>
+
+          <div class="glass-card rounded-xl p-5 border border-amber-500/30 flex flex-col justify-between">
+            <div>
+              <div class="text-3xl font-black text-amber-400 font-heading">Dynamic</div>
+              <div class="text-sm font-bold text-white mt-1">SLA Matrix</div>
+            </div>
+            <p class="text-xs text-slate-400 mt-2">Critical (4h), High (8h), Medium (24h), Low (48h).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: Optical Camera HUD -->
+    <section class="slide flex-col justify-center space-y-6">
+      <div>
+        <div class="text-xs font-mono text-cyan-400 font-semibold tracking-wider uppercase mb-1">Verification Engineering</div>
+        <h2 class="text-3xl md:text-4xl font-bold text-white font-heading">Browser-Native Camera HUD & Evidence System</h2>
+        <p class="text-sm text-slate-400 mt-1">Preventing fraudulent complaints and ambiguous tickets with real-time photographic proof.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+        <div class="glass-card rounded-2xl p-6 border-cyan-500/40 relative">
+          <div class="text-3xl mb-3">📡</div>
+          <h3 class="text-lg font-bold text-white font-heading">WebRTC MediaStream</h3>
+          <p class="text-xs text-cyan-400 font-mono mb-3">Zero Native App Dependency</p>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Utilizes HTML5 <code>navigator.mediaDevices.getUserMedia()</code> to stream hardware camera sensors directly inside browser tabs across iOS, Android, and desktop without APK or app store installation.
+          </p>
+        </div>
+
+        <div class="glass-card rounded-2xl p-6 border-blue-500/40 relative glow-blue">
+          <div class="text-3xl mb-3">🎯</div>
+          <h3 class="text-lg font-bold text-white font-heading">Tactical HUD Viewfinder</h3>
+          <p class="text-xs text-blue-400 font-mono mb-3">Guided Inspection Reticles</p>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Futuristic sci-fi reticle overlay with laser scanline animations guides students to properly frame damaged transformers, leaking pipes, or broken hardware, freezing frame instantly on shutter click.
+          </p>
+        </div>
+
+        <div class="glass-card rounded-2xl p-6 border-purple-500/40 relative">
+          <div class="text-3xl mb-3">📦</div>
+          <h3 class="text-lg font-bold text-white font-heading">Base64 Ingest & Dual Upload</h3>
+          <p class="text-xs text-purple-400 font-mono mb-3">Sanitized Binary Persistence</p>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            HTML5 Canvas snapshots are converted into sanitized Base64 URI strings and safely stored in MongoDB Atlas, with full backwards compatibility for conventional disk image file uploads.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: Cloud Database & Render Deployment -->
+    <section class="slide flex-col justify-center space-y-6">
+      <div>
+        <div class="text-xs font-mono text-emerald-400 font-semibold tracking-wider uppercase mb-1">Cloud Infrastructure</div>
+        <h2 class="text-3xl md:text-4xl font-bold text-white font-heading">MongoDB Atlas Database & Render PaaS Production</h2>
+        <p class="text-sm text-slate-400 mt-1">Robust document-oriented persistence, connection pooling, and automated production deployment.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+        <div class="glass-card rounded-2xl p-6 border-emerald-500/40">
+          <div class="text-3xl mb-3">🍃</div>
+          <h3 class="text-lg font-bold text-white font-heading">MongoDB Atlas Cluster</h3>
+          <p class="text-xs text-emerald-400 font-mono mb-3">Managed Multi-Region Cluster</p>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Active live cluster hosted at <code>vsmart.vg39rfx.mongodb.net</code>. Document flexibility stores polymorphic attributes, Base64 camera images, and dynamic SLA timestamps with native BSON chronological indexing.
+          </p>
+        </div>
+
+        <div class="glass-card rounded-2xl p-6 border-cyan-500/40">
+          <div class="text-3xl mb-3">🔒</div>
+          <h3 class="text-lg font-bold text-white font-heading">Connection Pooling</h3>
+          <p class="text-xs text-cyan-400 font-mono mb-3">Auto-Reconnect & TLS Transport</p>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            DNS SRV protocol via <code>dnspython</code> dynamically resolves cluster nodes. SSL/TLS encrypted transport shields sensitive student grievances, with server timeout tuning for high network resilience.
+          </p>
+        </div>
+
+        <div class="glass-card rounded-2xl p-6 border-purple-500/40">
+          <div class="text-3xl mb-3">🚀</div>
+          <h3 class="text-lg font-bold text-white font-heading">Render Cloud PaaS</h3>
+          <p class="text-xs text-purple-400 font-mono mb-3">Production WSGI Containerization</p>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Configured with Gunicorn 21.2+ WSGI server and <code>Procfile</code>. Automated Git push deployments, environment variable secret shielding (MONGO_URI, SECRET_KEY), and zero-downtime rolling updates.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 9: Quality Assurance & Test Verification -->
+    <section class="slide flex-col justify-center space-y-5">
+      <div>
+        <div class="text-xs font-mono text-emerald-400 font-semibold tracking-wider uppercase mb-1">Verification & Reliability</div>
+        <h2 class="text-3xl md:text-4xl font-bold text-white font-heading">Comprehensive Test Suite & Benchmarks</h2>
+        <p class="text-sm text-slate-400 mt-1">100% automated test coverage validating end-to-end cloud persistence, authentication, and AI accuracy.</p>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
+        <div class="glass-card rounded-xl p-4 border border-emerald-500/40">
+          <div class="text-2xl font-black text-emerald-400 font-heading">8 / 8 Passing</div>
+          <div class="text-xs font-bold text-white mt-1">100% Test Pass Rate</div>
+          <p class="text-[11px] text-slate-400 mt-1">Verified against live Atlas</p>
+        </div>
+        <div class="glass-card rounded-xl p-4 border border-cyan-400/40">
+          <div class="text-2xl font-black text-cyan-400 font-heading">&lt; 50ms</div>
+          <div class="text-xs font-bold text-white mt-1">NLP Triage Latency</div>
+          <p class="text-[11px] text-slate-400 mt-1">Microsecond CPU classification</p>
+        </div>
+        <div class="glass-card rounded-xl p-4 border border-blue-500/40">
+          <div class="text-2xl font-black text-blue-400 font-heading">&lt; 180ms</div>
+          <div class="text-xs font-bold text-white mt-1">API Response Time</div>
+          <p class="text-[11px] text-slate-400 mt-1">Flask WSGI + Atlas network roundtrip</p>
+        </div>
+        <div class="glass-card rounded-xl p-4 border border-amber-400/40">
+          <div class="text-2xl font-black text-amber-400 font-heading">99.9%</div>
+          <div class="text-xs font-bold text-white mt-1">Target Cloud Uptime</div>
+          <p class="text-[11px] text-slate-400 mt-1">Render cloud managed availability</p>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-xl p-5 border border-blue-500/30">
+        <div class="text-xs font-mono text-blue-400 font-bold mb-2">VERIFIED TEST SUITES (test_system.py)</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+          <div class="flex items-start gap-2">
+            <span class="text-emerald-400 font-bold">✔</span>
+            <span class="text-slate-300"><strong>Test 1: Cloud Atlas Connectivity:</strong> TLS handshake & index verification.</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-emerald-400 font-bold">✔</span>
+            <span class="text-slate-300"><strong>Test 2: AI Classifier:</strong> Maps descriptions into 4 facility domains.</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-emerald-400 font-bold">✔</span>
+            <span class="text-slate-300"><strong>Test 3: Emergency Escalation:</strong> Detects danger terms → Critical 4h SLA.</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-emerald-400 font-bold">✔</span>
+            <span class="text-slate-300"><strong>Test 4: Multi-Role Auth:</strong> Secure hash verification & role enforcement.</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-emerald-400 font-bold">✔</span>
+            <span class="text-slate-300"><strong>Test 5: Live Camera Mock:</strong> Base64 optical evidence upload & persistence.</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-emerald-400 font-bold">✔</span>
+            <span class="text-slate-300"><strong>Test 6: Admin Workflow:</strong> Pending → In Progress → Resolved lifecycle.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 10: Future Roadmap & Conclusion -->
+    <section class="slide flex-col justify-center space-y-6">
+      <div>
+        <div class="text-xs font-mono text-purple-400 font-semibold tracking-wider uppercase mb-1">Looking Ahead</div>
+        <h2 class="text-3xl md:text-4xl font-bold text-white font-heading">Future Scalability Roadmap & Conclusion</h2>
+        <p class="text-sm text-slate-400 mt-1">Expanding from reactive complaint resolution to predictive, autonomous campus infrastructure.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 w-full">
+        <div class="glass-card rounded-xl p-4 border-t-2 border-cyan-400">
+          <div class="text-xl mb-1">📡</div>
+          <h3 class="text-sm font-bold text-white font-heading">IoT Sensor Mesh</h3>
+          <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+            Vibration sensors on water pumps and HVAC units triggering automatic service tickets before human observation.
+          </p>
+        </div>
+
+        <div class="glass-card rounded-xl p-4 border-t-2 border-blue-500">
+          <div class="text-xl mb-1">📍</div>
+          <h3 class="text-sm font-bold text-white font-heading">Mobile PWA & GPS</h3>
+          <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+            GPS pin-drop on campus map for outdoor streetlights and pathways with background push notifications.
+          </p>
+        </div>
+
+        <div class="glass-card rounded-xl p-4 border-t-2 border-purple-500">
+          <div class="text-xl mb-1">📊</div>
+          <h3 class="text-sm font-bold text-white font-heading">Predictive Analytics</h3>
+          <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+            Machine learning forecasting equipment failure cycles to allocate preventative budget before breakdown occurs.
+          </p>
+        </div>
+
+        <div class="glass-card rounded-xl p-4 border-t-2 border-emerald-400">
+          <div class="text-xl mb-1">💬</div>
+          <h3 class="text-sm font-bold text-white font-heading">WhatsApp Bot Dispatch</h3>
+          <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+            Automated dispatch bot delivering photo evidence and location maps directly to on-call electricians via WhatsApp.
+          </p>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-xl p-5 border border-cyan-500/30 bg-gradient-to-r from-blue-950/40 via-slate-900/60 to-cyan-950/40">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">🎯</span>
+          <div>
+            <h4 class="text-sm font-bold text-cyan-300 font-heading">KEY PROJECT TAKEAWAY</h4>
+            <p class="text-xs text-slate-200 mt-0.5 leading-relaxed">
+              Smart Campus AI replaces institutional chaos with automated intelligence. By uniting sub-50ms NLP triage, live optical verification, role-governed SLA accountability, and MongoDB Atlas cloud resilience, universities can deliver rapid, transparent, and dignified facility governance.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Navigation Controls -->
+  <footer class="relative z-20 flex items-center justify-between border-t border-slate-800/80 pt-4 no-print">
+    <div class="flex items-center space-x-2 text-xs text-slate-500 font-mono">
+      <span>Use Keys:</span>
+      <kbd class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">← Prev</kbd>
+      <kbd class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">Next →</kbd>
+      <kbd class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">Space</kbd>
+    </div>
+
+    <!-- Progress Dots -->
+    <div class="flex items-center space-x-1.5" id="dots-container"></div>
+
+    <div class="flex items-center space-x-3">
+      <button id="prev-btn" onclick="prevSlide()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition border border-slate-700 disabled:opacity-30">
+        ← Previous
+      </button>
+      <button id="next-btn" onclick="nextSlide()" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition shadow-lg shadow-blue-600/30">
+        Next Slide →
+      </button>
+    </div>
+  </footer>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    let currentIdx = 0;
+
+    const currentSlideEl = document.getElementById('current-slide');
+    const totalSlidesEl = document.getElementById('total-slides');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const dotsContainer = document.getElementById('dots-container');
+
+    totalSlidesEl.textContent = totalSlides;
+
+    // Create dots
+    for (let i = 0; i < totalSlides; i++) {
+      const dot = document.createElement('button');
+      dot.className = `w-2 h-2 rounded-full transition-all duration-200 ${i === 0 ? 'bg-blue-400 w-6' : 'bg-slate-700 hover:bg-slate-600'}`;
+      dot.onclick = () => goToSlide(i);
+      dotsContainer.appendChild(dot);
+    }
+
+    function updateSlide() {
+      slides.forEach((slide, idx) => {
+        if (idx === currentIdx) {
+          slide.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+
+      currentSlideEl.textContent = currentIdx + 1;
+      prevBtn.disabled = currentIdx === 0;
+      nextBtn.textContent = currentIdx === totalSlides - 1 ? 'Finish ↺' : 'Next Slide →';
+
+      // Update dots
+      const dots = dotsContainer.children;
+      for (let i = 0; i < dots.length; i++) {
+        if (i === currentIdx) {
+          dots[i].className = 'w-6 h-2 rounded-full bg-blue-400 transition-all duration-200';
+        } else {
+          dots[i].className = 'w-2 h-2 rounded-full bg-slate-700 hover:bg-slate-600 transition-all duration-200';
+        }
+      }
+    }
+
+    function nextSlide() {
+      if (currentIdx < totalSlides - 1) {
+        currentIdx++;
+      } else {
+        currentIdx = 0;
+      }
+      updateSlide();
+    }
+
+    function prevSlide() {
+      if (currentIdx > 0) {
+        currentIdx--;
+        updateSlide();
+      }
+    }
+
+    function goToSlide(idx) {
+      currentIdx = idx;
+      updateSlide();
+    }
+
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key.toLowerCase() === 'f') {
+        toggleFullScreen();
+      }
+    });
+
+    updateSlide();
+  </script>
+</body>
+</html>

@@ -19,10 +19,16 @@ import ai_classifier
 # Load environment variables from .env
 load_dotenv()
 
-MONGO_URI = os.getenv(
-    "MONGO_URI",
-    "mongodb+srv://protechxlr_db_user:dXO75jOnsEpMJIcD@vsmart.vg39rfx.mongodb.net/?retryWrites=true&w=majority"
-)
+MONGO_URI = os.getenv("MONGO_URI")
+if not MONGO_URI:
+    load_dotenv()
+    MONGO_URI = os.getenv("MONGO_URI")
+
+if not MONGO_URI:
+    raise ValueError(
+        "CRITICAL: 'MONGO_URI' is not configured. "
+        "Please define MONGO_URI in your .env file or host environment settings."
+    )
 MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "smart_campus")
 
 _client = None
