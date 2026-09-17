@@ -275,15 +275,58 @@
         <div class="input-hint">Our AI engine continuously analyzes your text to determine category, severity, and department in real-time.</div>
       </div>
 
-      <!-- Photo Attachment -->
+      <!-- Photo Attachment (Upload or Live Camera) -->
       <div class="form-group">
-        <label>Photo Attachment (Optional Evidence)</label>
-        <div class="dropzone" id="dropzone">
-          <input type="file" name="photo" id="photoInput" accept="image/*" onchange="handleFileSelect(event)">
-          <div class="dropzone-icon"><i class="fa-regular fa-image"></i></div>
-          <div class="dropzone-text">Click or drag &amp; drop an image (JPG, PNG, WEBP &bull; Max 16MB)</div>
+        <label>Photo Evidence (Optional &bull; Upload or Live Camera)</label>
+        
+        <!-- Mode Tabs -->
+        <div class="photo-mode-tabs">
+          <button type="button" class="photo-tab-btn active" id="tabUploadBtn" onclick="switchPhotoMode('upload')">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Upload Image File
+          </button>
+          <button type="button" class="photo-tab-btn" id="tabCameraBtn" onclick="switchPhotoMode('camera')">
+            <i class="fa-solid fa-camera"></i> Live Camera Snapshot
+          </button>
         </div>
+
+        <!-- Mode 1: File Dropzone -->
+        <div id="uploadSection">
+          <div class="dropzone" id="dropzone">
+            <input type="file" name="photo" id="photoInput" accept="image/*" onchange="handleFileSelect(event)">
+            <div class="dropzone-icon"><i class="fa-regular fa-image"></i></div>
+            <div class="dropzone-text">Click or drag &amp; drop an image (JPG, PNG, WEBP &bull; Max 16MB)</div>
+          </div>
+        </div>
+
+        <!-- Mode 2: Live Camera Viewfinder -->
+        <div id="cameraSection" style="display:none;">
+          <div class="camera-container">
+            <div class="camera-feed-wrapper">
+              <video id="cameraVideo" autoplay playsinline muted></video>
+              <div class="camera-live-badge"><i class="fa-solid fa-circle fa-beat" style="color:#ef4444;"></i> Live Viewfinder</div>
+            </div>
+            <div class="camera-controls">
+              <button type="button" class="btn btn-primary btn-sm" onclick="takeSnapshot()">
+                <i class="fa-solid fa-camera"></i> Take Snapshot
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="switchCamera()">
+                <i class="fa-solid fa-repeat"></i> Flip Camera
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="switchPhotoMode('upload')">
+                <i class="fa-solid fa-xmark"></i> Cancel
+              </button>
+            </div>
+            <div id="cameraErrorMsg" style="display:none; color:#f87171; font-size:0.82rem; margin-top:8px;"></div>
+          </div>
+        </div>
+
+        <!-- Hidden canvas & base64 input -->
+        <canvas id="cameraCanvas" style="display:none;"></canvas>
+        <input type="hidden" name="camera_photo" id="cameraPhotoData">
+
+        <!-- Unified Preview -->
         <div class="preview-wrapper" id="previewWrapper">
+          <div class="preview-source-badge" id="previewSourceBadge"><i class="fa-regular fa-image"></i> Attached Photo</div>
           <img id="imagePreview" class="preview-img" alt="Attached evidence preview">
           <button type="button" class="remove-preview-btn" onclick="clearPhoto()" title="Remove photo">&times;</button>
         </div>
@@ -494,13 +537,139 @@
     }
   }
 
+  // Camera & Photo Management
+  let currentCameraStream = null;
+  let currentFacingMode = "environment";
+
+  function switchPhotoMode(mode) {
+    const uploadSec = document.getElementById("uploadSection");
+    const cameraSec = document.getElementById("cameraSection");
+    const tabUpload = document.getElementById("tabUploadBtn");
+    const tabCamera = document.getElementById("tabCameraBtn");
+    const errDiv = document.getElementById("cameraErrorMsg");
+    if (errDiv) errDiv.style.display = "none";
+
+    if (mode === 'camera') {
+      if (uploadSec) uploadSec.style.display = "none";
+      if (cameraSec) cameraSec.style.display = "block";
+      if (tabUpload) tabUpload.classList.remove("active");
+      if (tabCamera) tabCamera.classList.add("active");
+      startCamera();
+    } else {
+      stopCamera();
+      if (cameraSec) cameraSec.style.display = "none";
+      if (uploadSec) uploadSec.style.display = "block";
+      if (tabCamera) tabCamera.classList.remove("active");
+      if (tabUpload) tabUpload.classList.add("active");
+    }
+  }
+
+  async function startCamera() {
+    const video = document.getElementById("cameraVideo");
+    const errDiv = document.getElementById("cameraErrorMsg");
+    if (errDiv) errDiv.style.display = "none";
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      if (errDiv) {
+        errDiv.innerText = "Camera API not supported in this browser environment. Please use file upload.";
+        errDiv.style.display = "block";
+      }
+      return;
+    }
+
+    stopCamera();
+
+    try {
+      currentCameraStream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: currentFacingMode,
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        },
+        audio: false
+      });
+      video.srcObject = currentCameraStream;
+      await video.play();
+    } catch (err) {
+      console.warn("Camera with facingMode failed, retrying generic video:", err);
+      try {
+        currentCameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        video.srcObject = currentCameraStream;
+        await video.play();
+      } catch (fallbackErr) {
+        console.error("Camera access failed:", fallbackErr);
+        if (errDiv) {
+          errDiv.innerText = "Could not activate camera (" + (fallbackErr.message || "permission denied or device in use") + "). Please upload an image file instead.";
+          errDiv.style.display = "block";
+        }
+      }
+    }
+  }
+
+  function stopCamera() {
+    if (currentCameraStream) {
+      currentCameraStream.getTracks().forEach(track => track.stop());
+      currentCameraStream = null;
+    }
+    const video = document.getElementById("cameraVideo");
+    if (video) video.srcObject = null;
+  }
+
+  function switchCamera() {
+    currentFacingMode = (currentFacingMode === "environment") ? "user" : "environment";
+    startCamera();
+  }
+
+  function takeSnapshot() {
+    const video = document.getElementById("cameraVideo");
+    const canvas = document.getElementById("cameraCanvas");
+    if (!video || !canvas || !currentCameraStream) return;
+
+    const w = video.videoWidth || 640;
+    const h = video.videoHeight || 480;
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0, w, h);
+
+    const dataUrl = canvas.toDataURL("image/jpeg", 0.88);
+    const hiddenInput = document.getElementById("cameraPhotoData");
+    if (hiddenInput) hiddenInput.value = dataUrl;
+
+    const img = document.getElementById("imagePreview");
+    if (img) img.src = dataUrl;
+
+    const badge = document.getElementById("previewSourceBadge");
+    if (badge) badge.innerHTML = '<i class="fa-solid fa-camera"></i> Live Camera Snapshot Attached';
+
+    const previewWrapper = document.getElementById("previewWrapper");
+    if (previewWrapper) previewWrapper.style.display = "block";
+
+    stopCamera();
+
+    // Return view to standard tab with photo preview
+    const cameraSec = document.getElementById("cameraSection");
+    if (cameraSec) cameraSec.style.display = "none";
+    const uploadSec = document.getElementById("uploadSection");
+    if (uploadSec) uploadSec.style.display = "block";
+    const tabCamera = document.getElementById("tabCameraBtn");
+    if (tabCamera) tabCamera.classList.remove("active");
+    const tabUpload = document.getElementById("tabUploadBtn");
+    if (tabUpload) tabUpload.classList.add("active");
+  }
+
   function handleFileSelect(event) {
     const file = event.target.files[0];
     if (file) {
+      const hiddenInput = document.getElementById("cameraPhotoData");
+      if (hiddenInput) hiddenInput.value = "";
+
       const reader = new FileReader();
       reader.onload = function(e) {
         const preview = document.getElementById("imagePreview");
         preview.src = e.target.result;
+        const badge = document.getElementById("previewSourceBadge");
+        if (badge) badge.innerHTML = '<i class="fa-regular fa-image"></i> Attached File: ' + file.name;
         document.getElementById("previewWrapper").style.display = "block";
       };
       reader.readAsDataURL(file);
@@ -508,10 +677,20 @@
   }
 
   function clearPhoto() {
-    document.getElementById("photoInput").value = "";
-    document.getElementById("previewWrapper").style.display = "none";
-    document.getElementById("imagePreview").src = "";
+    const photoInput = document.getElementById("photoInput");
+    if (photoInput) photoInput.value = "";
+    const hiddenInput = document.getElementById("cameraPhotoData");
+    if (hiddenInput) hiddenInput.value = "";
+    const previewWrapper = document.getElementById("previewWrapper");
+    if (previewWrapper) previewWrapper.style.display = "none";
+    const preview = document.getElementById("imagePreview");
+    if (preview) preview.src = "";
+    stopCamera();
   }
+
+  window.addEventListener("beforeunload", () => {
+    stopCamera();
+  });
 
   // Run initial prediction on page load if default text exists
   window.addEventListener("DOMContentLoaded", () => {

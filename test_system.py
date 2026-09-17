@@ -143,5 +143,65 @@ class TestMongoDBAtlasCampusSystem(unittest.TestCase):
         self.assertEqual(export_resp.status_code, 200)
         self.assertIn("text/csv", export_resp.headers["Content-Type"])
 
+    def test_07_live_camera_snapshot_submission(self):
+        import os
+        db = get_db()
+        self.client.get("/demo-login/student")
+
+        # 1x1 transparent PNG as base64 data URL
+        base64_img = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+
+        resp = self.client.post("/student", data={
+            "location": "Hostel 2, Room 101",
+            "title": "Broken switchboard live camera evidence",
+            "description": "Electric socket sparks when plugged in, danger of electric shock.",
+            "camera_photo": base64_img
+        }, follow_redirects=True)
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn(b"Complaint Registered!", resp.data)
+
+        # Verify saved in MongoDB Atlas
+        c_doc = db.complaints.find_one({"title": "Broken switchboard live camera evidence"})
+        self.assertIsNotNone(c_doc)
+        self.assertTrue(c_doc.get("photo"))
+        
+        # Verify file exists on disk in static/uploads/
+        filepath = os.path.join(app.config["UPLOAD_FOLDER"], c_doc["photo"])
+        self.assertTrue(os.path.isfile(filepath), f"File {filepath} was not saved on disk")
+
+        # Verify image renders on tracking page
+        track_resp = self.client.get(f"/track/{c_doc['id']}")
+        self.assertEqual(track_resp.status_code, 200)
+        self.assertIn(c_doc["photo"].encode(), track_resp.data)
+
+    def test_08_faculty_live_camera_submission(self):
+        import os
+        db = get_db()
+        self.client.get("/demo-login/faculty")
+
+        base64_img = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+
+        resp = self.client.post("/faculty", data={
+            "location": "Seminar Hall A",
+            "title": "Projector HDMI port damaged camera snapshot",
+            "description": "HDMI port pins bent, cannot connect laptop during seminar.",
+            "urgency_override": "High",
+            "camera_photo": base64_img
+        }, follow_redirects=True)
+
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn(b"Complaint Registered!", resp.data)
+
+        # Verify saved in MongoDB Atlas
+        c_doc = db.complaints.find_one({"title": "Projector HDMI port damaged camera snapshot"})
+        self.assertIsNotNone(c_doc)
+        self.assertTrue(c_doc.get("photo"))
+
+        # Verify file exists on disk in static/uploads/
+        filepath = os.path.join(app.config["UPLOAD_FOLDER"], c_doc["photo"])
+        self.assertTrue(os.path.isfile(filepath), f"File {filepath} was not saved on disk")
+
 if __name__ == "__main__":
     unittest.main()
+

@@ -363,7 +363,126 @@
       padding: 3px 8px;
       border-radius: 6px;
       border: 1px solid #bfdbfe;
-      font-size: 0.9em;
+    }
+
+    /* Camera & Photo Attachment UI */
+    .photo-mode-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .photo-tab-btn {
+      flex: 1;
+      padding: 9px 14px;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      border-radius: 8px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: var(--secondary);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .photo-tab-btn:hover {
+      background: #f1f5f9;
+      color: var(--text-main);
+    }
+    .photo-tab-btn.active {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .camera-container {
+      background: #0f172a;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+    .camera-feed-wrapper {
+      position: relative;
+      max-width: 440px;
+      margin: 0 auto;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #000000;
+      aspect-ratio: 4 / 3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .camera-feed-wrapper video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .camera-live-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(4px);
+      color: white;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .camera-controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .preview-wrapper {
+      display: none;
+      margin-top: 14px;
+      position: relative;
+      max-width: 240px;
+    }
+    .preview-source-badge {
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--secondary);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .preview-img {
+      width: 100%;
+      max-height: 220px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      display: block;
+    }
+    .remove-preview-btn {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: var(--critical);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     /* Footer */

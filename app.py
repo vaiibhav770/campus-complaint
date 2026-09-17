@@ -43,6 +43,39 @@ def allowed_file(filename: str) -> bool:
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXT
 
 
+def save_complaint_photo(req) -> str | None:
+    """Saves photo from either direct file upload or live camera snapshot data."""
+    # 1. Standard file upload
+    photo_file = req.files.get("photo")
+    if photo_file and photo_file.filename and allowed_file(photo_file.filename):
+        ext = photo_file.filename.rsplit(".", 1)[1].lower()
+        safe_name = f"{uuid.uuid4().hex[:12]}.{ext}"
+        photo_file.save(os.path.join(UPLOAD_FOLDER, safe_name))
+        return safe_name
+
+    # 2. Base64 live camera snapshot
+    camera_data = req.form.get("camera_photo", "").strip()
+    if camera_data and camera_data.startswith("data:image"):
+        import base64
+        try:
+            header, encoded = camera_data.split(",", 1)
+            ext = "jpg"
+            if "png" in header:
+                ext = "png"
+            elif "webp" in header:
+                ext = "webp"
+            safe_name = f"cam_{uuid.uuid4().hex[:12]}.{ext}"
+            file_bytes = base64.b64decode(encoded)
+            with open(os.path.join(UPLOAD_FOLDER, safe_name), "wb") as f:
+                f.write(file_bytes)
+            return safe_name
+        except Exception as e:
+            print(f"Error decoding camera photo base64: {e}")
+            return None
+
+    return None
+
+
 def get_db():
     return db_module.get_db()
 
@@ -305,14 +338,8 @@ def student_portal():
         combined_text = f"{title} {description}".strip()
         ai_result = ai_classifier.route_complaint(combined_text, location)
 
-        # Photo handling
-        photo_filename = None
-        photo_file = request.files.get("photo")
-        if photo_file and photo_file.filename and allowed_file(photo_file.filename):
-            ext = photo_file.filename.rsplit(".", 1)[1].lower()
-            safe_name = f"{uuid.uuid4().hex[:12]}.{ext}"
-            photo_file.save(os.path.join(UPLOAD_FOLDER, safe_name))
-            photo_filename = safe_name
+        # Photo handling (uploaded file or live camera snapshot)
+        photo_filename = save_complaint_photo(request)
 
         complaint_id = f"CMP-{uuid.uuid4().hex[:6].upper()}"
         now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -395,13 +422,8 @@ def faculty_portal():
             iso, readable = ai_classifier.calculate_sla_target(8)
             ai_result["sla_target_iso"] = iso
 
-        photo_filename = None
-        photo_file = request.files.get("photo")
-        if photo_file and photo_file.filename and allowed_file(photo_file.filename):
-            ext = photo_file.filename.rsplit(".", 1)[1].lower()
-            safe_name = f"{uuid.uuid4().hex[:12]}.{ext}"
-            photo_file.save(os.path.join(UPLOAD_FOLDER, safe_name))
-            photo_filename = safe_name
+        # Photo handling (uploaded file or live camera snapshot)
+        photo_filename = save_complaint_photo(request)
 
         complaint_id = f"CMP-{uuid.uuid4().hex[:6].upper()}"
         now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
